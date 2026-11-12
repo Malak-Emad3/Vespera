@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" id="htmlRoot">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vespera | Home</title>
+    <!-- Google Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:wght@300;400;500;600&display=swap"
+        rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Main Stylesheet -->
+    <link rel="stylesheet" href="style.css">
+    
+
+</head>
+
+<body>
+
+    <!-- Hero Banner & Navigation -->
+    <div class="hero-banner">
+        <!-- الناف بار الشفاف الخاص بالهوم -->
+        <nav class="transparent-nav hero-nav">
+            <div class="logo-container">
+                <a href="index.html">
+                    <img src="images/logo-ves.png" alt="Vespera Logo">
+                </a>
+            </div>
+
+            <ul class="nav-links">
+                <li><a href="index.html" class="active">Home</a></li>
+                <li><a href="shop.html">Shop</a></li>
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+            <!-- مسافة مخصصة للأيقونات عشان تبعد عن المراية في الهوم -->
+            <div class="nav-icons" style="margin-right: 120px;">
+                <a href="javascript:void(0);" onclick="toggleSearchModal()" id="search-icon" title="Search"><i
+                        class="fas fa-search"></i></a>
+                <a href="contact.html" title="Account"><i class="fas fa-user"></i></a>
+                <a href="#" id="cart-icon" title="Shopping Bag">
+                    <i class="fas fa-shopping-bag"></i>
+                    <span id="cart-count">0</span>
+                </a>
+            </div>
+        </nav>
+
+    </div>
+    <div class="home-quiz-box">
+        <h3 style="color: #2c2c2c; margin-bottom: 10px; font-weight: 700;"> Struggling to Choose the Right Products for
+            Your Skin </h3>
+        <p style="color: #444; margin-bottom: 25px; font-size: 14px;">Let our smart assistant suggest a custom skincare
+            routine designed specifically to match your glow in minutes.</p>
+        <a href="quiz.html" class="btn-main-quiz"
+            style="background:  #e9c69f; color: #4d332b; padding: 12px 25px; border-radius: 8px; text-decoration: none; font-weight: bold;">
+             🎀 Start Your Skin Quiz Now 🎀 </a>
+    </div>
+
+    <!-- Search Modal -->
+    <div class="modal-overlay" id="search-modal">
+        <div class="modal-content">
+            <span class="close-btn" id="close-search">&times;</span>
+            <h3>Search Products</h3>
+            <input type="text" id="search-input" onkeyup="handleLiveSearch(event)" placeholder="Type to search..." />
+            <div class="search-results-list" id="search-results"></div>
+        </div>
+    </div>
+
+    <!-- Cart Drawer / Modal -->
+    <div class="modal-overlay" id="cart-modal">
+        <div class="modal-content cart-drawer">
+            <span class="close-btn" id="close-cart">&times;</span>
+            <h3>Shopping Bag</h3>
+            <div class="cart-items-container" id="cart-items">
+                <!-- Cart items will dynamically appear here -->
+                <p class="empty-cart">Your cart is empty.</p>
+            </div>
+            <div class="cart-total-section">
+                <span>Total:</span>
+                <span id="cart-total-price">$0.00</span>
+            </div>
+            <button class="btn-add checkout-btn">Proceed to Checkout</button>
+        </div>
+    </div>
+    <!-- Main JS Link -->
+    <script src="script.js"></script>
+    <script>
+        // أول ما أي صفحة تفتح، بنشيك على اللغة المخزنة
+        document.addEventListener("DOMContentLoaded", () => {
+            const savedLang = localStorage.getItem("siteLang") || "en";
+            applyLanguage(savedLang);
+        });
+
+        function toggleLanguage() {
+            const currentLang = localStorage.getItem("siteLang") || "en";
+            const newLang = currentLang === "en" ? "ar" : "en";
+
+            // بنحفظ اللغة الجديدة في المتصفح
+            localStorage.setItem("siteLang", newLang);
+            applyLanguage(newLang);
+        }
+
+        function applyLanguage(lang) {
+            const htmlRoot = document.getElementById('htmlRoot');
+            const elements = document.querySelectorAll('[data-en]');
+
+            if (lang === 'ar') {
+                htmlRoot.setAttribute('lang', 'ar');
+                htmlRoot.setAttribute('dir', 'rtl');
+                elements.forEach(el => {
+                    el.innerText = el.getAttribute('data-ar');
+                    if (el.classList.contains('text-left')) el.classList.replace('text-left', 'text-right');
+                });
+            } else {
+                htmlRoot.setAttribute('lang', 'en');
+                htmlRoot.setAttribute('dir', 'ltr');
+                elements.forEach(el => {
+                    el.innerText = el.getAttribute('data-en');
+                    if (el.classList.contains('text-right')) el.classList.replace('text-right', 'text-left');
+                });
+            }
+        }
+    </script>
+    <!-- Toast Notification -->
+    <div id="toast" class="toast-notification">Item added to cart successfully</div>
+
+    <!-- Main JS (if you have one, or you can link it here) -->
+    <!-- <script src="script.js"></script> -->
+     <!-- Search Modal Box -->
+<div id="search-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; justify-content: center; align-items: center;">
+  <div style="background: #F9F3EC; padding: 30px; border-radius: 20px; width: 90%; max-width: 500px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); position: relative;">
+    <!-- زرار الإغلاق -->
+    <span onclick="toggleSearchModal()" style="position: absolute; top: 15px; right: 20px; font-size: 24px; cursor: pointer; color: #6E5243;">&times;</span>
+    
+    <h3 style="font-family: 'Playfair Display', serif; margin-bottom: 15px; color: #6E5243;">Search Products 🔍</h3>
+    
+    <!--input الكتابة -->
+    <input type="text" id="search-input" onkeyup="filterProducts()" placeholder="Type to search products..." 
+           style="width: 100%; padding: 12px; border: 1px solid #A8886F; border-radius: 8px; background: #EADCCB; color: #6E5243; outline: none; font-size: 14px;">
+    
+    <!-- مكان ظهور نتائج البحث -->
+    <div id="search-results" style="margin-top: 15px; max-height: 200px; overflow-y: auto;"></div>
+  </div>
+</div>
+
+</body>
+
+</html>

@@ -1,0 +1,1361 @@
+ <!DOCTYPE html>
+<html lang="en" dir="ltr" id="htmlRoot">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vespera | Shop</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        .product-card {
+            background: #e9bd9c !important;
+            border-radius: 14px;
+            border: 1px solid #f0dec9 !important;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: all 0.35s ease-in-out;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.04);
+            height: 100%;
+        }
+        .product-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 30px rgba(140, 109, 98, 0.25);
+            border-color: #4d332b !important;
+        }
+        .product-img-container {
+            width: 100%;
+            height: 180px;
+            background: #f0dec9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 15px;
+            box-sizing: border-box;
+            cursor: pointer;
+        }
+        .product-card img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+        .section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 22px;
+            color: #2c2c2c;
+            margin-bottom: 20px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #e8d0d3;
+            display: inline-block;
+        }
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+        }
+        @media (max-width: 768px) {
+            .products-grid {
+                grid-template-columns: repeat(1, 1fr);
+            }
+        }
+        .extra-products {
+            display: none;
+            margin-top: 25px;
+        }
+        .extra-products.show {
+            display: block;
+        }
+        .read-more-btn {
+            background: transparent;
+            border: 2px solid #8c6d62;
+            color: #8c6d62;
+            padding: 8px 22px;
+            border-radius: 20px;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 500;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: block;
+            margin: 20px auto 0 auto;
+        }
+        .read-more-btn:hover {
+            background: #8c6d62;
+            color: #fff;
+        }
+        #cart-drawer {
+            position: fixed;
+            top: 0;
+            right: -400px;
+            width: 380px;
+            height: 100%;
+            background: #f0dec9;
+            box-shadow: -5px 0 25px rgba(0, 0, 0, 0.1);
+            transition: 0.4s ease-in-out;
+            z-index: 999;
+            display: flex;
+            flex-direction: column;
+            padding: 25px;
+            box-sizing: border-box;
+        }
+        .product-card p,
+        .product-card span,
+        .product-card small {
+            color: #4a3532 !important;
+            font-weight: 500;
+        }
+        .product-card h3,
+        .product-card .price {
+            color: #2c1d1a !important;
+            font-weight: 700;
+        }
+        #cart-drawer.open {
+            right: 0;
+        }
+        .cart-item-row {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #f0dec9;
+            padding-bottom: 12px;
+        }
+        .cart-item-row img {
+            width: 60px;
+            height: 60px;
+            object-fit: contain;
+            background: #fff;
+            border-radius: 8px;
+            padding: 4px;
+        }
+        #cart-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            display: none;
+            z-index: 999;
+        }
+        #cart-overlay.active {
+            display: block;
+        }
+        .product-title-link {
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        .product-title-link:hover {
+            color: #8c6d62 !important;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="cart-overlay" onclick="toggleCartDrawer()"></div>
+
+    <div id="cart-drawer">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 2px solid #f4f4f4; padding-bottom: 10px;">
+            <h3 style="font-family: 'Playfair Display', serif; color: #2c2c2c; margin: 0;">🛍️ Your Shopping Bag</h3>
+            <button onclick="toggleCartDrawer()" style="background: none; border: none; font-size: 24px; cursor: pointer; color: #333;">&times;</button>
+        </div>
+        <div id="cart-items-container" style="flex: 1; overflow-y: auto;"></div>
+        <div style="border-top: 2px solid #b9a1a1; padding-top: 15px; margin-top: 10px;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 8px; font-weight: 600; font-size: 16px; color: #2c2c2c;">
+                <span>Total (USD):</span>
+                <span id="cart-total-usd">$0.00</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 15px; font-weight: 600; font-size: 16px; color: #8c6d62;">
+                <span>المجموع بالجنيه (EGP):</span>
+                <span id="cart-total-egp">0.00 EGP</span>
+            </div>
+            <button onclick="toggleCheckoutModal()" style="width: 100%; background: #2c2c2c; color: #fff; border: none; padding: 12px; border-radius: 8px; font-weight: 600; cursor: pointer;">
+                Proceed to Checkout ✨
+            </button>
+        </div>
+    </div>
+
+    <div id="checkout-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 10000; justify-content: center; align-items: center;">
+        <div style="background: #F9F3EC; padding: 30px; border-radius: 20px; width: 90%; max-width: 450px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); position: relative; text-align: left;">
+            <span onclick="toggleCheckoutModal()" style="position: absolute; top: 15px; right: 20px; font-size: 24px; cursor: pointer; color: #6E5243;">&times;</span>
+            <h3 style="font-family: 'Playfair Display', serif; margin-bottom: 15px; color: #6E5243; text-align: center;">Complete Your Order 🛍️</h3>
+            <form id="checkout-form" action="https://formspree.io/f/xbgojqrw" method="POST" onsubmit="submitOrder(event)" style="display: flex; flex-direction: column; gap: 12px;">
+                <div style="position: relative;">
+                    <input type="text" id="order-name" name="Customer Name" placeholder="Your Full Name" autocomplete="off" required 
+                           style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #A8886F; background: #EADCCB; color: #6E5243; outline: none; font-size: 14px;"
+                           onfocus="showOrderNameSuggestions()" oninput="filterOrderNameSuggestions()">
+                    <div id="order-name-suggestions" style="display: none; position: absolute; top: 100%; left: 0; width: 100%; background: #F9F3EC; border: 1px solid #A8886F; border-radius: 8px; margin-top: 3px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); z-index: 1001;">
+                        <div onclick="selectOrderName('Malak Emad')" style="padding: 8px 12px; cursor: pointer; color: #6E5243; border-bottom: 1px solid rgba(168,136,111,0.2); font-size: 13px;">Malak Emad</div>
+                        <div onclick="selectOrderName('Malak Shahin')" style="padding: 8px 12px; cursor: pointer; color: #6E5243; font-size: 13px;">Malak Shahin</div>
+                    </div>
+                </div>
+                <input type="email" id="order-email" name="Customer Email" placeholder="Your Email" autocomplete="email" required 
+                       style="padding: 10px; border-radius: 8px; border: 1px solid #A8886F; background: #EADCCB; color: #6E5243; outline: none; font-size: 14px;">
+                <input type="text" id="order-address" name="Shipping Address" placeholder="Your Delivery Address (City, Street)" required 
+                       style="padding: 10px; border-radius: 8px; border: 1px solid #A8886F; background: #EADCCB; color: #6E5243; outline: none; font-size: 14px;">
+                <input type="tel" id="order-phone" name="Phone Number" placeholder="Phone Number" required 
+                       style="padding: 10px; border-radius: 8px; border: 1px solid #A8886F; background: #EADCCB; color: #6E5243; outline: none; font-size: 14px;">
+                <input type="hidden" id="order-details-input" name="Order Details">
+                <button type="submit" style="padding: 12px; font-size: 14px; cursor: pointer; background: #6E5243; color: #F9F3EC; border: none; border-radius: 8px; font-weight: 600; margin-top: 5px;">
+                    Confirm & Send Order ✨
+                </button>
+            </form>
+            <div id="order-success-msg" style="display: none; padding: 15px; background: #EADCCB; color: #6E5243; border-radius: 8px; text-align: center; font-family: 'Playfair Display', serif; font-size: 14px;">
+                🎉 Thank you! Your order has been placed successfully and sent to us. We will contact you soon! 🌸
+            </div>
+        </div>
+    </div>
+
+    <div id="product-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 10000; justify-content: center; align-items: center;">
+        <div style="background: #F9F3EC; padding: 30px; border-radius: 20px; width: 90%; max-width: 500px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); position: relative; text-align: left; max-height: 85vh; overflow-y: auto;">
+            <span onclick="closeProductModal()" style="position: absolute; top: 15px; right: 20px; font-size: 24px; cursor: pointer; color: #6E5243;">&times;</span>
+            <div style="text-align: center; margin-bottom: 15px;">
+                <img id="modal-product-img" src="" alt="" style="max-height: 140px; object-fit: contain;">
+            </div>
+            <h3 id="modal-product-title" style="font-family: 'Playfair Display', serif; color: #2c2c2c; margin-bottom: 10px; font-size: 20px;"></h3>
+            <div style="font-size: 14px; color: #4a3532; display: flex; flex-direction: column; gap: 8px; line-height: 1.5;">
+                <p><strong>Ingredients:</strong> <span id="modal-product-ingredients"></span></p>
+                <p><strong>Benefits:</strong> <span id="modal-product-benefits"></span></p>
+                <p><strong>Skin Type:</strong> <span id="modal-product-skintype"></span></p>
+                <p><strong>Sensitivity Risk:</strong> <span id="modal-product-sensitivity"></span></p>
+                <p><strong>Daily Use:</strong> <span id="modal-product-daily"></span></p>
+            </div>
+            <div style="margin-top: 20px; text-align: center;">
+                <button id="modal-add-btn" style="background: #2c2c2c; color: #fff; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 600; cursor: pointer;">Add to Bag 🛍️</button>
+            </div>
+        </div>
+    </div>
+
+    <nav class="transparent-nav hero-nav" style="position: relative; background: transparent;">
+        <div class="logo-container">
+            <a href="index.html"><img src="images/logo-ves.png" alt="Vespera Logo"></a>
+        </div>
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="shop.html" class="active">Shop</a></li>
+            <li><a href="quiz.html">Skin Quiz</a></li>
+            <li><a href="contact.html">Contact</a></li>
+        </ul>
+        <div class="nav-icons" style="margin-right: 120px;">
+            <a href="javascript:void(0);" onclick="toggleSearchModal()" title="Search"><i class="fas fa-search"></i></a>
+            <a href="contact.html" title="Account"><i class="fas fa-user"></i></a>
+            <a href="#" id="cart-icon" onclick="toggleCartDrawer(); return false;" title="Shopping Bag" style="cursor: pointer;">
+                <i class="fas fa-shopping-bag"></i>
+                <span id="cart-count">0</span>
+            </a>
+        </div>
+    </nav>
+
+    <div style="max-width: 1100px; margin: 40px auto; padding: 0 20px;">
+        <h2 style="font-family: 'Playfair Display', serif; text-align: center; font-size: 32px; margin-bottom: 40px; color: #2c2c2c;"></h2>
+
+        <div style="margin-bottom: 45px;">
+            <h3 class="section-title">Cleansers & Face Washes 🧼</h3>
+            <div class="products-grid">
+                <div class="product-card">
+                    <div class="product-img-container" onclick="openProductModal('CeraVe Cleanser')"><img src="images/cerave Cleanser.png" alt="CeraVe Cleanser"></div>
+                    <div style="padding: 15px; display: flex; flex-direction: column; justify-content: space-between; flex: 1;">
+                        <div>
+                            <h4 class="product-title-link" onclick="openProductModal('CeraVe Cleanser')" style="font-family: 'Playfair Display', serif; font-size: 15px; color: #2c2c2c; margin-bottom: 5px;">CeraVe Cleanser</h4>
+                            <p style="color: #666; font-size: 12px; margin-bottom: 10px;">Gentle cleansing for smooth skin.</p>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #e8d0d3; padding-top: 10px;">
+                            <div>
+                                <span style="font-weight: 600; color: #8c6d62; font-size: 14px; display: block;">$18.00</span>
+                                <span style="font-size: 11px; color: #888;">(900 EGP)</span>
+                            </div>
+                            <button onclick="addProductToCart('CeraVe Cleanser', 18.00, 'images/cerave Cleanser.png')" style="background: #2c2c2c; color: #fff; border: none; padding: 7px 14px; border-radius: 6px; font-size: 12px; cursor: pointer;">Add 🛍️</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="product-card">
+                    <div class="product-img-container" onclick="openProductModal('Derma Active Cleanser')"><img src="images/dermaactive Cleanser.png" alt="Derma Active Cleanser"></div>
+                    <div style="padding: 15px; display: flex; flex-direction: column; justify-content: space-between; flex: 1;">
+                        <div>
+                            <h4 class="product-title-link" onclick="openProductModal('Derma Active Cleanser')" style="font-family: 'Playfair Display', serif; font-size: 15px; color: #2c2c2c; margin-bottom: 5px;">Derma Active Cleanser</h4>
+                            <p style="color: #666; font-size: 12px; margin-bottom: 10px;">Deep purification & clear pores.</p>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #e8d0d3; padding-top: 10px;">
+                            <div>
+                                <span style="font-weight: 600; color: #8c6d62; font-size: 14px; display: block;">$19.00</span>
+                                <span style="font-size: 11px; color: #888;">(950 EGP)</span>
+                            </div>
+                            <button onclick="addProductToCart('Derma Active Cleanser', 19.00, 'images/dermaactive Cleanser.png')" style="background: #2c2c2c; color: #fff; border: none; padding: 7px 14px; border-radius: 6px; font-size: 12px; cursor: pointer;">Add 🛍️</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="product-card">
+                    <div class="product-img-container" onclick="openProductModal('Medicube Cleanser')"><img src="images/medicube Cleanser.png" alt="Medicube Cleanser"></div>
+                    <div style="padding: 15px; display: flex; flex-direction: column; justify-content: space-between; flex: 1;">
+                        <div>
+                            <h4 class="product-title-link" onclick="openProductModal('Medicube Cleanser')" style="font-family: 'Playfair Display', serif; font-size: 15px; color: #2c2c2c; margin-bottom: 5px;">Medicube Cleanser</h4>
+                            <p style="color: #666; font-size: 12px; margin-bottom: 10px;">Advanced pore cleansing care.</p>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #e8d0d3; padding-top: 10px;">
+                            <div>
+                                <span style="font-weight: 600; color: #8c6d62; font-size: 14px; display: block;">$25.00</span>
+                                <span style="font-size: 11px; color: #888;">(1,250 EGP)</span>
+                            </div>
+                            <button onclick="addProductToCart('Medicube Cleanser', 25.00, 'images/medicube Cleanser.png')" style="background: #2c2c2c; color: #fff; border: none; padding: 7px 14px; border-radius: 6px; font-size: 12px; cursor: pointer;">Add 🛍️</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="extra-cleansers" class="extra-products">
+                <div class="products-grid">
+                    <div class="product-card">
+                        <div class="product-img-container" onclick="openProductModal('Kiara Cleanser')"><img src="images/kiara cleanser.jpg" alt="Kiara Cleanser"></div>
+                        <div style="padding: 15px; display: flex; flex-direction: column; justify-content: space-between; flex: 1;">
+                            <div>
+                                <h4 class="product-title-link" onclick="openProductModal('Kiara Cleanser')" style="font-family: 'Playfair Display', serif; font-size: 15px; color: #2c2c2c; margin-bottom: 5px;">Kiara Cleanser</h4>
+                                <p style="color: #666; font-size: 12px; margin-bottom: 12px;">Refreshing daily face wash.</p>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #eee; padding-top: 10px;">
+                                <div>
+                                    <span style="font-weight: 600; color: #8c6d62; font-size: 14px; display: block;">$20.00</span>
+                                    <span style="font-size: 11px; color: #888;">(1,000 EGP)</span>
+                                </div>
+                                <button onclick="addProductToCart('Kiara Cleanser', 20.00, 'images/kiara cleanser.jpg')" style="background: #2c2c2c; color: #fff; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 13px;">Add ✨</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="product-card">
+                        <div class="product-img-container" onclick="openProductModal('Starville Cleanser')"><img src="images/starville Cleanser.png" alt="Starville Cleanser"></div>
+                        <div style="padding: 15px; display: flex; flex-direction: column; justify-content: space-between; flex: 1;">
+                            <div>
+                                <h4 class="product-title-link" onclick="openProductModal('Starville Cleanser')" style="font-family: 'Playfair Display', serif; font-size: 15px; color: #2c2c2c; margin-bottom: 5px;">Starville Cleanser</h4>
+                                <p style="color: #666; font-size: 12px; margin-bottom: 12px;">Ultra-lightweight protection.</p>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #eee; padding-top: 10px;">
+                                <div>
+                                    <span style="font-weight: 600; color: #8c6d62; font-size: 14px; display: block;">$21.00</span>
+                                    <span style="font-size: 11px; color: #888;">(1,050 EGP)</span>
+                                </div>
+                                <button onclick="addProductToCart('Starville Cleanser', 21.00, 'images/starville Cleanser.png')" style="background: #2c2c2c; color: #fff; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 13px;">Add ✨</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <button class="read-more-btn" onclick="toggleSection('extra-cleansers', this)">Read More ✨</button>
+        </div>
+
+        <div style="margin-bottom: 45px;">
+            <h3 class="section-title">Sun Protection ☀️</h3>
+            <div class="products-grid">
+                <div class="product-card">
+                    <div class="product-img-container" onclick="openProductModal('Melatime Sunscreen')"><img src="images/melatime sunscrean.png" alt="Melatime Sunscreen"></div>
+                    <div style="padding: 15px; display: flex; flex-direction: column; justify-content: space-between; flex: 1;">
+                        <div>
+                            <h4 class="product-title-link" onclick="openProductModal('Melatime Sunscreen')" style="font-family: 'Playfair Display', serif; font-size: 15px; color: #2c2c2c; margin-bottom: 5px;">Melatime Sunscreen</h4>
+                            <p style="color: #666; font-size: 12px; margin-bottom: 10px;">Radiance & sun defense.</p>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #e8d0d3; padding-top: 10px;">
+                            <div>
+                                <span style="font-weight: 600; color: #8c6d62; font-size: 14px; display: block;">$28.00</span>
+                                <span style="font-size: 11px; color: #888;">(1,400 EGP)</span>
+                            </div>
+                            <button onclick="addProductToCart('Melatime Sunscreen', 28.00, 'images/melatime sunscrean.png')" style="background: #2c2c2c; color: #fff; border: none; padding: 7px 14px; border-radius: 6px; font-size: 12px; cursor: pointer;">Add 🛍️</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="product-card">
+                    <div class="product-img-container" onclick="openProductModal('Vacation Sunscreen')"><img src="images/vacation sunscrean.png" alt="Vacation Sunscreen"></div>
+                    <div style="padding: 15px; display: flex; flex-direction: column; justify-content: space-between; flex: 1;">
+                        <div>
+                            <h4 class="product-title-link" onclick="openProductModal('Vacation Sunscreen')" style="font-family: 'Playfair Display', serif; font-size: 15px; color: #2c2c2c; margin-bottom: 5px;">Vacation Sunscreen</h4>
+                            <p style="color: #666; font-size: 12px; margin-bottom: 10px;">Beach ready sun defense.</p>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #e8d0d3; padding-top: 10px;">
+                            <div>
+                                <span style="font-weight: 600; color: #8c6d62; font-size: 14px; display: block;">$26.00</span>
+                                <span style="font-size: 11px; color: #888;">(1,300 EGP)</span>
+                            </div>
+                            <button onclick="addProductToCart('Vacation Sunscreen', 26.00, 'images/vacation sunscrean.png')" style="background: #2c2c2c; color: #fff; border: none; padding: 7px 14px; border-radius: 6px; font-size: 12px; cursor: pointer;">Add 🛍️</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="product-card">
+                    <div class="product-img-container" onclick="openProductModal('Daily Sunscreen SPF 50+')"><img src="images/sunscrean3.png" alt="Daily Sunscreen"></div>
+                    <div style="padding: 15px; display: flex; flex-direction: column; justify-content: space-between; flex: 1;">
+                        <div>
+                            <h4 class="product-title-link" onclick="openProductModal('Daily Sunscreen SPF 50+')" style="font-family: 'Playfair Display', serif; font-size: 15px; color: #2c2c2c; margin-bottom: 5px;">Daily Sunscreen SPF 50+</h4>
+                            <p style="color: #666; font-size: 12px; margin-bottom: 10px;">Maximum UV protection.</p>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #e8d0d3; padding-top: 10px;">
+                            <div>
+                                <span style="font-weight: 600; color: #8c6d62; font-size: 14px; display: block;">$24.00</span>
+                                <span style="font-size: 11px; color: #888;">(1,200 EGP)</span>
+                            </div>
+                            <button onclick="addProductToCart('Daily Sunscreen SPF 50+', 24.00, 'images/sunscrean3.png')" style="background: #2c2c2c; color: #fff; border: none; padding: 7px 14px; border-radius: 6px; font-size: 12px; cursor: pointer;">Add 🛍️</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="extra-sunscreen" class="extra-products">
+                <div class="products-grid">
+                    <div class="product-card">
+                        <div class="product-img-container" onclick="openProductModal('Sunscreen Pro Shield')"><img src="images/sunscrean4.jpg" alt="Sunscreen Pro"></div>
+                        <div style="padding: 15px; display: flex; flex-direction: column; justify-content: space-between; flex: 1;">
+                            <div>
+                                <h4 class="product-title-link" onclick="openProductModal('Sunscreen Pro Shield')" style="font-family: 'Playfair Display', serif; font-size: 15px; color: #2c2c2c; margin-bottom: 5px;">Sunscreen Pro Shield</h4>
+                                <p style="color: #666; font-size: 12px; margin-bottom: 10px;">Advanced multi-defense block.</p>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #e8d0d3; padding-top: 10px;">
+                                <div>
+                                    <span style="font-weight: 600; color: #8c6d62; font-size: 14px; display: block;">$25.00</span>
+                                    <span style="font-size: 11px; color: #888;">(1,250 EGP)</span>
+                                </div>
+                                <button onclick="addProductToCart('Sunscreen Pro Shield', 25.00, 'images/sunscrean4.jpg')" style="background: #2c2c2c; color: #fff; border: none; padding: 7px 14px; border-radius: 6px; font-size: 12px; cursor: pointer;">Add 🛍️</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="product-card">
+                        <div class="product-img-container" onclick="openProductModal('Sunscreen Invisible Fluid')"><img src="images/sunscrean5.jpg" alt="Sunscreen Fluid"></div>
+                        <div style="padding: 15px; display: flex; flex-direction: column; justify-content: space-between; flex: 1;">
+                            <div>
+                                <h4 class="product-title-link" onclick="openProductModal('Sunscreen Invisible Fluid')" style="font-family: 'Playfair Display', serif; font-size: 15px; color: #2c2c2c; margin-bottom: 5px;">Sunscreen Invisible Fluid</h4>
+                                <p style="color: #666; font-size: 12px; margin-bottom: 10px;">Zero weight feel protection.</p>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #e8d0d3; padding-top: 10px;">
+                                <div>
+                                    <span style="font-weight: 600; color: #8c6d62; font-size: 14px; display: block;">$27.00</span>
+                                    <span style="font-size: 11px; color: #888;">(1,350 EGP)</span>
+                                </div>
+                                <button onclick="addProductToCart('Sunscreen Invisible Fluid', 27.00, 'images/sunscrean5.jpg')" style="background: #2c2c2c; color: #fff; border: none; padding: 7px 14px; border-radius: 6px; font-size: 12px; cursor: pointer;">Add 🛍️</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="product-card">
+                        <div class="product-img-container" onclick="openProductModal('Mineral Sunscreen Care')"><img src="images/sunscrean6.jpg" alt="Mineral Sunscreen"></div>
+                        <div style="padding: 15px; display: flex; flex-direction: column; justify-content: space-between; flex: 1;">
+                            <div>
+                                <h4 class="product-title-link" onclick="openProductModal('Mineral Sunscreen Care')" style="font-family: 'Playfair Display', serif; font-size: 15px; color: #2c2c2c; margin-bottom: 5px;">Mineral Sunscreen Care</h4>
+                                <p style="color: #666; font-size: 12px; margin-bottom: 10px;">Pure mineral UV shield.</p>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #e8d0d3; padding-top: 10px;">
+                                <div>
+                                    <span style="font-weight: 600; color: #8c6d62; font-size: 14px; display: block;">$29.00</span>
+                                    <span style="font-size: 11px; color: #888;">(1,450 EGP)</span>
+                                </div>
+                                <button onclick="addProductToCart('Mineral Sunscreen Care', 29.00, 'images/sunscrean6.jpg')" style="background: #2c2c2c; color: #fff; border: none; padding: 7px 14px; border-radius: 6px; font-size: 12px; cursor: pointer;">Add 🛍️</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <button class="read-more-btn" onclick="toggleSection('extra-sunscreen', this)">Read More ✨</button>
+        </div>
+
+        <div style="margin-bottom: 45px;">
+            <h3 class="section-title">Moisturizers & Creams 💧</h3>
+            <div class="products-grid">
+                <div class="product-card">
+                    <div class="product-img-container" onclick="openProductModal('CeraVe Cream')"><img src="images/cerave Cream.png" alt="CeraVe Cream"></div>
+                    <div style="padding: 15px; display: flex; flex-direction: column; justify-content: space-between; flex: 1;">
+                        <div>
+                            <h4 class="product-title-link" onclick="openProductModal('CeraVe Cream')" style="font-family: 'Playfair Display', serif; font-size: 15px; color: #2c2c2c; margin-bottom: 5px;">CeraVe Cream</h4>
+                            <p style="color: #666; font-size: 12px; margin-bottom: 10px;">Restorative barrier cream.</p>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #e8d0d3; padding-top: 10px;">
+                            <div>
+                                <span style="font-weight: 600; color: #8c6d62; font-size: 14px; display: block;">$25.00</span>
+                                <span style="font-size: 11px; color: #888;">(1,250 EGP)</span>
+                            </div>
+                            <button onclick="addProductToCart('CeraVe Cream', 25.00, 'images/cerave Cream.png')" style="background: #2c2c2c; color: #fff; border: none; padding: 7px 14px; border-radius: 6px; font-size: 12px; cursor: pointer;">Add 🛍️</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="product-card">
+                    <div class="product-img-container" onclick="openProductModal('Moist-1 Cream')"><img src="images/moist-1 Cream.jpg" alt="Moist-1 Cream"></div>
+                    <div style="padding: 15px; display: flex; flex-direction: column; justify-content: space-between; flex: 1;">
+                        <div>
+                            <h4 class="product-title-link" onclick="openProductModal('Moist-1 Cream')" style="font-family: 'Playfair Display', serif; font-size: 15px; color: #2c2c2c; margin-bottom: 5px;">Moist-1 Cream</h4>
+                            <p style="color: #666; font-size: 12px; margin-bottom: 10px;">Intense daily hydration.</p>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #e8d0d3; padding-top: 10px;">
+                            <div>
+                                <span style="font-weight: 600; color: #8c6d62; font-size: 14px; display: block;">$23.00</span>
+                                <span style="font-size: 11px; color: #888;">(1,150 EGP)</span>
+                            </div>
+                            <button onclick="addProductToCart('Moist-1 Cream', 23.00, 'images/moist-1 Cream.jpg')" style="background: #2c2c2c; color: #fff; border: none; padding: 7px 14px; border-radius: 6px; font-size: 12px; cursor: pointer;">Add 🛍️</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="product-card">
+                    <div class="product-img-container" onclick="openProductModal('Leylak Cream')"><img src="images/leylak Cream.png" alt="Leylak Cream"></div>
+                    <div style="padding: 15px; display: flex; flex-direction: column; justify-content: space-between; flex: 1;">
+                        <div>
+                            <h4 class="product-title-link" onclick="openProductModal('Leylak Cream')" style="font-family: 'Playfair Display', serif; font-size: 15px; color: #2c2c2c; margin-bottom: 5px;">Leylak Cream</h4>
+                            <p style="color: #666; font-size: 12px; margin-bottom: 10px;">Soothing nourishment formula.</p>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #e8d0d3; padding-top: 10px;">
+                            <div>
+                                <span style="font-weight: 600; color: #8c6d62; font-size: 14px; display: block;">$19.00</span>
+                                <span style="font-size: 11px; color: #888;">(950 EGP)</span>
+                            </div>
+                            <button onclick="addProductToCart('Leylak Cream', 19.00, 'images/leylak Cream.png')" style="background: #2c2c2c; color: #fff; border: none; padding: 7px 14px; border-radius: 6px; font-size: 12px; cursor: pointer;">Add 🛍️</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="extra-moisturizers" class="extra-products">
+                <div class="products-grid">
+                    <div class="product-card">
+                        <div class="product-img-container" onclick="openProductModal('Hydra Pro Moisturizer')"><img src="images/mostrizer1.jpg" alt="Moisturizer Pro"></div>
+                        <div style="padding: 15px; display: flex; flex-direction: column; justify-content: space-between; flex: 1;">
+                            <div>
+                                <h4 class="product-title-link" onclick="openProductModal('Hydra Pro Moisturizer')" style="font-family: 'Playfair Display', serif; font-size: 15px; color: #2c2c2c; margin-bottom: 5px;">Hydra Pro Moisturizer</h4>
+                                <p style="color: #666; font-size: 12px; margin-bottom: 10px;">Deep moisture infusion.</p>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #e8d0d3; padding-top: 10px;">
+                                <div>
+                                    <span style="font-weight: 600; color: #8c6d62; font-size: 14px; display: block;">$22.00</span>
+                                    <span style="font-size: 11px; color: #888;">(1,100 EGP)</span>
+                                </div>
+                                <button onclick="addProductToCart('Hydra Pro Moisturizer', 22.00, 'images/mostrizer1.jpg')" style="background: #2c2c2c; color: #fff; border: none; padding: 7px 14px; border-radius: 6px; font-size: 12px; cursor: pointer;">Add 🛍️</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="product-card">
+                        <div class="product-img-container" onclick="openProductModal('Velvet Soft Cream')"><img src="images/mostrizer2.jpg" alt="Moisturizer Velvet"></div>
+                        <div style="padding: 15px; display: flex; flex-direction: column; justify-content: space-between; flex: 1;">
+                            <div>
+                                <h4 class="product-title-link" onclick="openProductModal('Velvet Soft Cream')" style="font-family: 'Playfair Display', serif; font-size: 15px; color: #2c2c2c; margin-bottom: 5px;">Velvet Soft Cream</h4>
+                                <p style="color: #666; font-size: 12px; margin-bottom: 10px;">Silky smooth finish.</p>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #e8d0d3; padding-top: 10px;">
+                                <div>
+                                    <span style="font-weight: 600; color: #8c6d62; font-size: 14px; display: block;">$24.00</span>
+                                    <span style="font-size: 11px; color: #888;">(1,200 EGP)</span>
+                                </div>
+                                <button onclick="addProductToCart('Velvet Soft Cream', 24.00, 'images/mostrizer2.jpg')" style="background: #2c2c2c; color: #fff; border: none; padding: 7px 14px; border-radius: 6px; font-size: 12px; cursor: pointer;">Add 🛍️</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="product-card">
+                        <div class="product-img-container" onclick="openProductModal('Advanced Repair Cream')"><img src="images/mostrizer3.jpg" alt="Moisturizer Advanced"></div>
+                        <div style="padding: 15px; display: flex; flex-direction: column; justify-content: space-between; flex: 1;">
+                            <div>
+                                <h4 class="product-title-link" onclick="openProductModal('Advanced Repair Cream')" style="font-family: 'Playfair Display', serif; font-size: 15px; color: #2c2c2c; margin-bottom: 5px;">Advanced Repair Cream</h4>
+                                <p style="color: #666; font-size: 12px; margin-bottom: 10px;">Ultimate skin repair care.</p>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #e8d0d3; padding-top: 10px;">
+                                <div>
+                                    <span style="font-weight: 600; color: #8c6d62; font-size: 14px; display: block;">$26.00</span>
+                                    <span style="font-size: 11px; color: #888;">(1,300 EGP)</span>
+                                </div>
+                                <button onclick="addProductToCart('Advanced Repair Cream', 26.00, 'images/mostrizer3.jpg')" style="background: #2c2c2c; color: #fff; border: none; padding: 7px 14px; border-radius: 6px; font-size: 12px; cursor: pointer;">Add 🛍️</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <button class="read-more-btn" onclick="toggleSection('extra-moisturizers', this)">Read More ✨</button>
+        </div>
+
+        <div style="margin-bottom: 45px;">
+            <h3 class="section-title">Body Lotions 🧴</h3>
+            <div class="products-grid">
+                <div class="product-card">
+                    <div class="product-img-container" onclick="openProductModal('Shaan Body Lotion')"><img src="images/shaan lotion.jpg" alt="Shaan Lotion"></div>
+                    <div style="padding: 15px; display: flex; flex-direction: column; justify-content: space-between; flex: 1;">
+                        <div>
+                            <h4 class="product-title-link" onclick="openProductModal('Shaan Body Lotion')" style="font-family: 'Playfair Display', serif; font-size: 15px; color: #2c2c2c; margin-bottom: 5px;">Shaan Body Lotion</h4>
+                            <p style="color: #666; font-size: 12px; margin-bottom: 10px;">All-day moisture & soft skin.</p>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #e8d0d3; padding-top: 10px;">
+                            <div>
+                                <span style="font-weight: 600; color: #8c6d62; font-size: 14px; display: block;">$22.00</span>
+                                <span style="font-size: 11px; color: #888;">(1,100 EGP)</span>
+                            </div>
+                            <button onclick="addProductToCart('Shaan Body Lotion', 22.00, 'images/shaan lotion.jpg')" style="background: #2c2c2c; color: #fff; border: none; padding: 7px 14px; border-radius: 6px; font-size: 12px; cursor: pointer;">Add 🛍️</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="product-card">
+                    <div class="product-img-container" onclick="openProductModal('Care and More Lotion')"><img src="images/care and more lotion.jpg" alt="Care and More Lotion"></div>
+                    <div style="padding: 15px; display: flex; flex-direction: column; justify-content: space-between; flex: 1;">
+                        <div>
+                            <h4 class="product-title-link" onclick="openProductModal('Care and More Lotion')" style="font-family: 'Playfair Display', serif; font-size: 15px; color: #2c2c2c; margin-bottom: 5px;">Care and More Lotion</h4>
+                            <p style="color: #666; font-size: 12px; margin-bottom: 10px;">Smoothing body care experience.</p>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #e8d0d3; padding-top: 10px;">
+                            <div>
+                                <span style="font-weight: 600; color: #8c6d62; font-size: 14px; display: block;">$20.00</span>
+                                <span style="font-size: 11px; color: #888;">(1,000 EGP)</span>
+                            </div>
+                            <button onclick="addProductToCart('Care and More Lotion', 20.00, 'images/care and more lotion.jpg')" style="background: #2c2c2c; color: #fff; border: none; padding: 7px 14px; border-radius: 6px; font-size: 12px; cursor: pointer;">Add 🛍️</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div style="margin-bottom: 45px;">
+            <h3 class="section-title">Hand Creams 🤲</h3>
+            <div class="products-grid">
+                <div class="product-card">
+                    <div class="product-img-container" onclick="openProductModal('Shaan Hand Cream')"><img src="images/shaan hand cream.jpg" alt="Shaan Hand Cream"></div>
+                    <div style="padding: 15px; display: flex; flex-direction: column; justify-content: space-between; flex: 1;">
+                        <div>
+                            <h4 class="product-title-link" onclick="openProductModal('Shaan Hand Cream')" style="font-family: 'Playfair Display', serif; font-size: 15px; color: #2c2c2c; margin-bottom: 5px;">Shaan Hand Cream</h4>
+                            <p style="color: #666; font-size: 12px; margin-bottom: 10px;">Nourishing hand care.</p>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #e8d0d3; padding-top: 10px;">
+                            <div>
+                                <span style="font-weight: 600; color: #8c6d62; font-size: 14px; display: block;">$12.00</span>
+                                <span style="font-size: 11px; color: #888;">(600 EGP)</span>
+                            </div>
+                            <button onclick="addProductToCart('Shaan Hand Cream', 12.00, 'images/shaan hand cream.jpg')" style="background: #2c2c2c; color: #fff; border: none; padding: 7px 14px; border-radius: 6px; font-size: 12px; cursor: pointer;">Add 🛍️</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="product-card">
+                    <div class="product-img-container" onclick="openProductModal('Care and More Hand Cream')"><img src="images/care and more hand cream.jpg" alt="Care and More Hand Cream"></div>
+                    <div style="padding: 15px; display: flex; flex-direction: column; justify-content: space-between; flex: 1;">
+                        <div>
+                            <h4 class="product-title-link" onclick="openProductModal('Care and More Hand Cream')" style="font-family: 'Playfair Display', serif; font-size: 15px; color: #2c2c2c; margin-bottom: 5px;">Care and More Hand Cream</h4>
+                            <p style="color: #666; font-size: 12px; margin-bottom: 10px;">Soft protection for hands.</p>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #e8d0d3; padding-top: 10px;">
+                            <div>
+                                <span style="font-weight: 600; color: #8c6d62; font-size: 14px; display: block;">$11.00</span>
+                                <span style="font-size: 11px; color: #888;">(550 EGP)</span>
+                            </div>
+                            <button onclick="addProductToCart('Care and More Hand Cream', 11.00, 'images/care and more hand cream.jpg')" style="background: #2c2c2c; color: #fff; border: none; padding: 7px 14px; border-radius: 6px; font-size: 12px; cursor: pointer;">Add 🛍️</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="product-card">
+                    <div class="product-img-container" onclick="openProductModal('Eva Hand Cream')"><img src="images/eva hand cream.jpg" alt="Eva Hand Cream"></div>
+                    <div style="padding: 15px; display: flex; flex-direction: column; justify-content: space-between; flex: 1;">
+                        <div>
+                            <h4 class="product-title-link" onclick="openProductModal('Eva Hand Cream')" style="font-family: 'Playfair Display', serif; font-size: 15px; color: #2c2c2c; margin-bottom: 5px;">Eva Hand Cream</h4>
+                            <p style="color: #666; font-size: 12px; margin-bottom: 10px;">Moisturizing daily hand care.</p>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #e8d0d3; padding-top: 10px;">
+                            <div>
+                                <span style="font-weight: 600; color: #8c6d62; font-size: 14px; display: block;">$10.00</span>
+                                <span style="font-size: 11px; color: #888;">(500 EGP)</span>
+                            </div>
+                            <button onclick="addProductToCart('Eva Hand Cream', 10.00, 'images/eva hand cream.jpg')" style="background: #2c2c2c; color: #fff; border: none; padding: 7px 14px; border-radius: 6px; font-size: 12px; cursor: pointer;">Add 🛍️</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div style="margin-bottom: 45px;">
+            <h3 class="section-title">Lip Care & Balms 💋</h3>
+            <div class="products-grid">
+                <div class="product-card">
+                    <div class="product-img-container" onclick="openProductModal('Vespera Classic Lip Balm')"><img src="images/lip palm.jpg" alt="Lip Balm"></div>
+                    <div style="padding: 15px; display: flex; flex-direction: column; justify-content: space-between; flex: 1;">
+                        <div>
+                            <h4 class="product-title-link" onclick="openProductModal('Vespera Classic Lip Balm')" style="font-family: 'Playfair Display', serif; font-size: 15px; color: #2c2c2c; margin-bottom: 5px;">Vespera Classic Lip Balm</h4>
+                            <p style="color: #666; font-size: 12px; margin-bottom: 10px;">Hydrating and glossy care.</p>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #e8d0d3; padding-top: 10px;">
+                            <div>
+                                <span style="font-weight: 600; color: #8c6d62; font-size: 14px; display: block;">$9.00</span>
+                                <span style="font-size: 11px; color: #888;">(450 EGP)</span>
+                            </div>
+                            <button onclick="addProductToCart('Vespera Classic Lip Balm', 9.00, 'images/lip palm.jpg')" style="background: #2c2c2c; color: #fff; border: none; padding: 7px 14px; border-radius: 6px; font-size: 12px; cursor: pointer;">Add 🛍️</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="product-card">
+                    <div class="product-img-container" onclick="openProductModal('Tinted Lip Balm')"><img src="images/lip palm2.jpg" alt="Lip Balm 2"></div>
+                    <div style="padding: 15px; display: flex; flex-direction: column; justify-content: space-between; flex: 1;">
+                        <div>
+                            <h4 class="product-title-link" onclick="openProductModal('Tinted Lip Balm')" style="font-family: 'Playfair Display', serif; font-size: 15px; color: #2c2c2c; margin-bottom: 5px;">Tinted Lip Balm</h4>
+                            <p style="color: #666; font-size: 12px; margin-bottom: 10px;">Soft color and moisture.</p>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #e8d0d3; padding-top: 10px;">
+                            <div>
+                                <span style="font-weight: 600; color: #8c6d62; font-size: 14px; display: block;">$10.00</span>
+                                <span style="font-size: 11px; color: #888;">(500 EGP)</span>
+                            </div>
+                            <button onclick="addProductToCart('Tinted Lip Balm', 10.00, 'images/lip palm2.jpg')" style="background: #2c2c2c; color: #fff; border: none; padding: 7px 14px; border-radius: 6px; font-size: 12px; cursor: pointer;">Add 🛍️</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="product-card">
+                    <div class="product-img-container" onclick="openProductModal('Nourishing Lip Care')"><img src="images/lip palm3.jpg" alt="Lip Balm 3"></div>
+                    <div style="padding: 15px; display: flex; flex-direction: column; justify-content: space-between; flex: 1;">
+                        <div>
+                            <h4 class="product-title-link" onclick="openProductModal('Nourishing Lip Care')" style="font-family: 'Playfair Display', serif; font-size: 15px; color: #2c2c2c; margin-bottom: 5px;">Nourishing Lip Care</h4>
+                            <p style="color: #666; font-size: 12px; margin-bottom: 10px;">Repairs dry and chapped lips.</p>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #e8d0d3; padding-top: 10px;">
+                            <div>
+                                <span style="font-weight: 600; color: #8c6d62; font-size: 14px; display: block;">$11.00</span>
+                                <span style="font-size: 11px; color: #888;">(550 EGP)</span>
+                            </div>
+                            <button onclick="addProductToCart('Nourishing Lip Care', 11.00, 'images/lip palm3.jpg')" style="background: #2c2c2c; color: #fff; border: none; padding: 7px 14px; border-radius: 6px; font-size: 12px; cursor: pointer;">Add 🛍️</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="extra-lips" class="extra-products">
+                <div class="products-grid">
+                    <div class="product-card">
+                        <div class="product-img-container" onclick="openProductModal('Luna Lip Balm')"><img src="images/luna lip palm.jpg" alt="Luna Lip Balm"></div>
+                        <div style="padding: 15px; display: flex; flex-direction: column; justify-content: space-between; flex: 1;">
+                            <div>
+                                <h4 class="product-title-link" onclick="openProductModal('Luna Lip Balm')" style="font-family: 'Playfair Display', serif; font-size: 15px; color: #2c2c2c; margin-bottom: 5px;">Luna Lip Balm</h4>
+                                <p style="color: #666; font-size: 12px; margin-bottom: 10px;">Moisturizing formula for lips.</p>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #e8d0d3; padding-top: 10px;">
+                                <div>
+                                    <span style="font-weight: 600; color: #8c6d62; font-size: 14px; display: block;">$8.00</span>
+                                    <span style="font-size: 11px; color: #888;">(400 EGP)</span>
+                                </div>
+                                <button onclick="addProductToCart('Luna Lip Balm', 8.00, 'images/luna lip palm.jpg')" style="background: #2c2c2c; color: #fff; border: none; padding: 7px 14px; border-radius: 6px; font-size: 12px; cursor: pointer;">Add 🛍️</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="product-card">
+                        <div class="product-img-container" onclick="openProductModal('Shaan Lip Balm')"><img src="images/shaan lip palm.png" alt="Shaan Lip Balm"></div>
+                        <div style="padding: 15px; display: flex; flex-direction: column; justify-content: space-between; flex: 1;">
+                            <div>
+                                <h4 class="product-title-link" onclick="openProductModal('Shaan Lip Balm')" style="font-family: 'Playfair Display', serif; font-size: 15px; color: #2c2c2c; margin-bottom: 5px;">Shaan Lip Balm</h4>
+                                <p style="color: #666; font-size: 12px; margin-bottom: 10px;">Protective soothing lip balm.</p>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #e8d0d3; padding-top: 10px;">
+                                <div>
+                                    <span style="font-weight: 600; color: #8c6d62; font-size: 14px; display: block;">$10.00</span>
+                                    <span style="font-size: 11px; color: #888;">(500 EGP)</span>
+                                </div>
+                                <button onclick="addProductToCart('Shaan Lip Balm', 10.00, 'images/shaan lip palm.png')" style="background: #2c2c2c; color: #fff; border: none; padding: 7px 14px; border-radius: 6px; font-size: 12px; cursor: pointer;">Add 🛍️</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="product-card">
+                        <div class="product-img-container" onclick="openProductModal('Amanda Lip Balm')"><img src="images/amanda lip palm.jpg" alt="Amanda Lip Balm"></div>
+                        <div style="padding: 15px; display: flex; flex-direction: column; justify-content: space-between; flex: 1;">
+                            <div>
+                                <h4 class="product-title-link" onclick="openProductModal('Amanda Lip Balm')" style="font-family: 'Playfair Display', serif; font-size: 15px; color: #2c2c2c; margin-bottom: 5px;">Amanda Lip Balm</h4>
+                                <p style="color: #666; font-size: 12px; margin-bottom: 10px;">Vibrant shine and moisture.</p>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #e8d0d3; padding-top: 10px;">
+                                <div>
+                                    <span style="font-weight: 600; color: #8c6d62; font-size: 14px; display: block;">$9.50</span>
+                                    <span style="font-size: 11px; color: #888;">(475 EGP)</span>
+                                </div>
+                                <button onclick="addProductToCart('Amanda Lip Balm', 9.50, 'images/amanda lip palm.jpg')" style="background: #2c2c2c; color: #fff; border: none; padding: 7px 14px; border-radius: 6px; font-size: 12px; cursor: pointer;">Add 🛍️</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <button class="read-more-btn" onclick="toggleSection('extra-lips', this)">Read More ✨</button>
+        </div>
+
+        <div style="margin-bottom: 45px;">
+            <h3 class="section-title">Massage & Body Oils 🌿</h3>
+            <div class="products-grid">
+                <div class="product-card">
+                    <div class="product-img-container" onclick="openProductModal('Relaxing Massage Oil')"><img src="images/massage.jpg" alt="Massage Oil"></div>
+                    <div style="padding: 15px; display: flex; flex-direction: column; justify-content: space-between; flex: 1;">
+                        <div>
+                            <h4 class="product-title-link" onclick="openProductModal('Relaxing Massage Oil')" style="font-family: 'Playfair Display', serif; font-size: 15px; color: #2c2c2c; margin-bottom: 5px;">Relaxing Massage Oil</h4>
+                            <p style="color: #666; font-size: 12px; margin-bottom: 10px;">Soothing relaxation blend.</p>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #e8d0d3; padding-top: 10px;">
+                            <div>
+                                <span style="font-weight: 600; color: #8c6d62; font-size: 14px; display: block;">$30.00</span>
+                                <span style="font-size: 11px; color: #888;">(1,500 EGP)</span>
+                            </div>
+                            <button onclick="addProductToCart('Relaxing Massage Oil', 30.00, 'images/massage.jpg')" style="background: #2c2c2c; color: #fff; border: none; padding: 7px 14px; border-radius: 6px; font-size: 12px; cursor: pointer;">Add 🛍️</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="product-card">
+                    <div class="product-img-container" onclick="openProductModal('Aromatherapy Body Oil')"><img src="images/massage2.jpg" alt="Massage Oil 2"></div>
+                    <div style="padding: 15px; display: flex; flex-direction: column; justify-content: space-between; flex: 1;">
+                        <div>
+                            <h4 class="product-title-link" onclick="openProductModal('Aromatherapy Body Oil')" style="font-family: 'Playfair Display', serif; font-size: 15px; color: #2c2c2c; margin-bottom: 5px;">Aromatherapy Body Oil</h4>
+                            <p style="color: #666; font-size: 12px; margin-bottom: 10px;">Calming scents & smooth touch.</p>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #e8d0d3; padding-top: 10px;">
+                            <div>
+                                <span style="font-weight: 600; color: #8c6d62; font-size: 14px; display: block;">$32.00</span>
+                                <span style="font-size: 11px; color: #888;">(1,600 EGP)</span>
+                            </div>
+                            <button onclick="addProductToCart('Aromatherapy Body Oil', 32.00, 'images/massage2.jpg')" style="background: #2c2c2c; color: #fff; border: none; padding: 7px 14px; border-radius: 6px; font-size: 12px; cursor: pointer;">Add 🛍️</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="product-card">
+                    <div class="product-img-container" onclick="openProductModal('Luxury Spa Oil')"><img src="images/massage3.jpg" alt="Massage Oil 3"></div>
+                    <div style="padding: 15px; display: flex; flex-direction: column; justify-content: space-between; flex: 1;">
+                        <div>
+                            <h4 class="product-title-link" onclick="openProductModal('Luxury Spa Oil')" style="font-family: 'Playfair Display', serif; font-size: 15px; color: #2c2c2c; margin-bottom: 5px;">Luxury Spa Oil</h4>
+                            <p style="color: #666; font-size: 12px; margin-bottom: 10px;">Deep muscle relaxation.</p>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #e8d0d3; padding-top: 10px; margin-top: 15px;">
+                            <div style="text-align: left; margin-right: 8px;">
+                                <span style="font-weight: 600; color: #6E5243; font-size: 14px; display: block;">$35.00</span>
+                                <span style="font-size: 11px; color: #888; display: block;">(1,750 EGP)</span>
+                            </div>
+                            <button onclick="addProductToCart('Luxury Spa Oil', 35.00, 'images/massage3.jpg')" style="background: #6E5243; color: #F9F3EC; border: none; padding: 7px 14px; border-radius: 6px; cursor: pointer; flex-shrink: 0;">Add 🛍️</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div id="search-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; justify-content: center; align-items: center;">
+        <div style="background: #F9F3EC; padding: 30px; border-radius: 20px; width: 90%; max-width: 500px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); position: relative;">
+            <span onclick="toggleSearchModal()" style="position: absolute; top: 15px; right: 20px; font-size: 24px; cursor: pointer; color: #6E5243;">&times;</span>
+            <h3 style="font-family: 'Playfair Display', serif; margin-bottom: 15px; color: #6E5243;">Search Products 🔍</h3>
+            <input type="text" id="search-input" onkeyup="filterProducts()" placeholder="Type to search products..." style="width: 100%; padding: 12px; border: 1px solid #A8886F; border-radius: 8px; background: #EADCCB; color: #6E5243; outline: none; font-size: 14px;">
+            <div id="search-results" style="margin-top: 15px; max-height: 200px; overflow-y: auto;"></div>
+        </div>
+    </div>
+
+    <script>
+        const productDatabase = {
+            "CeraVe Cleanser": {
+                priceUsd: 18.00,
+                priceEgp: 900,
+                img: "images/cerave Cleanser.png",
+                ingredients: "Essential Ceramides, Hyaluronic Acid, Niacinamide",
+                benefits: "Restores protective skin barrier, hydrates gently, removes impurities.",
+                skinType: "Normal to Dry Skin",
+                sensitivity: "Low / Dermatologist tested and fragrance-free",
+                daily: "Yes, suitable for morning and evening use."
+            },
+            "Derma Active Cleanser": {
+                priceUsd: 19.00,
+                priceEgp: 950,
+                img: "images/dermaactive Cleanser.png",
+                ingredients: "Salicylic Acid, Tea Tree Extract, Glycerin",
+                benefits: "Deep pore purification, controls excess oil, clears breakouts.",
+                skinType: "Oily & Acne-Prone Skin",
+                sensitivity: "Moderate / Patch test recommended for sensitive skin",
+                daily: "Yes, once or twice daily."
+            },
+            "Medicube Cleanser": {
+                priceUsd: 25.00,
+                priceEgp: 1250,
+                img: "images/medicube Cleanser.png",
+                ingredients: "AHA/BHA/PHA complex, Centella Asiatica",
+                benefits: "Advanced pore care, gentle exfoliation, smooth texture.",
+                skinType: "All Skin Types, especially textured skin",
+                sensitivity: "Low-Moderate",
+                daily: "Yes, daily use supported."
+            },
+            "Kiara Cleanser": {
+                priceUsd: 20.00,
+                priceEgp: 1000,
+                img: "images/kiara cleanser.jpg",
+                ingredients: "Aloe Vera, Green Tea Extract, Vitamin E",
+                benefits: "Refreshing hydration, antioxidant protection, soothing effect.",
+                skinType: "Combination & Sensitive Skin",
+                sensitivity: "Very Low / Hypoallergenic",
+                daily: "Yes, ideal for daily routine."
+            },
+            "Starville Cleanser": {
+                priceUsd: 21.00,
+                priceEgp: 1050,
+                img: "images/starville Cleanser.png",
+                ingredients: "Panthenol, Zinc PCA, Chamomile Extract",
+                benefits: "Regulates sebum, reduces shine, calms irritation.",
+                skinType: "Oily & Combination Skin",
+                sensitivity: "Low",
+                daily: "Yes, suitable for everyday use."
+            },
+            "Melatime Sunscreen": {
+                priceUsd: 28.00,
+                priceEgp: 1400,
+                img: "images/melatime sunscrean.png",
+                ingredients: "Melanin Shield, Vitamin C, Broad-Spectrum UV Filters",
+                benefits: "Protects against UV rays, brightens skin tone, fights dark spots.",
+                skinType: "All Skin Types",
+                sensitivity: "Low",
+                daily: "Yes, apply every morning."
+            },
+            "Vacation Sunscreen": {
+                priceUsd: 26.00,
+                priceEgp: 1300,
+                img: "images/vacation sunscrean.png",
+                ingredients: "Aloe, Coconut Oil Extracts, Chemical UV Filters",
+                benefits: "High protection, lightweight, non-greasy finish.",
+                skinType: "Normal to Combination Skin",
+                sensitivity: "Low",
+                daily: "Yes, perfect for daily outdoor protection."
+            },
+            "Daily Sunscreen SPF 50+": {
+                priceUsd: 24.00,
+                priceEgp: 1200,
+                img: "images/sunscrean3.png",
+                ingredients: "Zinc Oxide, Titanium Dioxide, Hyaluronic Acid",
+                benefits: "Maximum UV block, prevents sunburn and premature aging.",
+                skinType: "Sensitive & All Skin Types",
+                sensitivity: "Very Low / Mineral-based formula",
+                daily: "Yes, essential for daily wear."
+            },
+            "Sunscreen Pro Shield": {
+                priceUsd: 25.00,
+                priceEgp: 1250,
+                img: "images/sunscrean4.jpg",
+                ingredients: "Niacinamide, Antioxidants, SPF 50+ Filters",
+                benefits: "Multi-defense barrier against pollution and sun damage.",
+                skinType: "All Skin Types",
+                sensitivity: "Low",
+                daily: "Yes, daily use."
+            },
+            "Sunscreen Invisible Fluid": {
+                priceUsd: 27.00,
+                priceEgp: 1350,
+                img: "images/sunscrean5.jpg",
+                ingredients: "Silica, Light Emollients, UV Blockers",
+                benefits: "Zero weight feel, matte finish, invisible protection.",
+                skinType: "Oily & Combination Skin",
+                sensitivity: "Low",
+                daily: "Yes, excellent under makeup."
+            },
+            "Mineral Sunscreen Care": {
+                priceUsd: 29.00,
+                priceEgp: 1450,
+                img: "images/sunscrean6.jpg",
+                ingredients: "Pure Mineral Filters, Shea Butter Extract",
+                benefits: "Pure physical shield, reflects UVA/UVB rays safely.",
+                skinType: "Sensitive & Delicate Skin",
+                sensitivity: "Minimal Risk / Fragrance-Free",
+                daily: "Yes, safe for everyday use."
+            },
+            "CeraVe Cream": {
+                priceUsd: 25.00,
+                priceEgp: 1250,
+                img: "images/cerave Cream.png",
+                ingredients: "3 Essential Ceramides, Hyaluronic Acid",
+                benefits: "Intense 24h moisture, restores natural skin barrier.",
+                skinType: "Dry to Very Dry Skin",
+                sensitivity: "Low / Dermatologist Recommended",
+                daily: "Yes, morning and night."
+            },
+            "Moist-1 Cream": {
+                priceUsd: 23.00,
+                priceEgp: 1150,
+                img: "images/moist-1 Cream.jpg",
+                ingredients: "Glycerin, Panthenol, Shea Butter",
+                benefits: "Locks in moisture, smooths rough patches.",
+                skinType: "Normal to Dry Skin",
+                sensitivity: "Low",
+                daily: "Yes, daily hydration."
+            },
+            "Leylak Cream": {
+                priceUsd: 19.00,
+                priceEgp: 950,
+                img: "images/leylak Cream.png",
+                ingredients: "Botanical Extracts, Vitamin E, Almond Oil",
+                benefits: "Soothing nourishment, softens and calms redness.",
+                skinType: "Sensitive & Normal Skin",
+                sensitivity: "Low",
+                daily: "Yes, daily use."
+            },
+            "Hydra Pro Moisturizer": {
+                priceUsd: 22.00,
+                priceEgp: 1100,
+                img: "images/mostrizer1.jpg",
+                ingredients: "Marine Extracts, Hyaluronic Acid, Peptides",
+                benefits: "Deep moisture infusion, plumps fine lines.",
+                skinType: "Dehydrated & All Skin Types",
+                sensitivity: "Low",
+                daily: "Yes, twice daily."
+            },
+            "Velvet Soft Cream": {
+                priceUsd: 24.00,
+                priceEgp: 1200,
+                img: "images/mostrizer2.jpg",
+                ingredients: "Silky Emollients, Vitamin B5",
+                benefits: "Silky smooth finish, non-greasy hydration.",
+                skinType: "Combination Skin",
+                sensitivity: "Low",
+                daily: "Yes, perfect for daily wear."
+            },
+            "Advanced Repair Cream": {
+                priceUsd: 26.00,
+                priceEgp: 1300,
+                img: "images/mostrizer3.jpg",
+                ingredients: "Ceramides, Allantoin, Squalane",
+                benefits: "Ultimate skin repair, heals damaged barriers.",
+                skinType: "Dry & Damaged Skin",
+                sensitivity: "Low",
+                daily: "Yes, intensive care."
+            },
+            "Shaan Body Lotion": {
+                priceUsd: 22.00,
+                priceEgp: 1100,
+                img: "images/shaan lotion.jpg",
+                ingredients: "Panthenol, Paraffin Oil, Glycerin",
+                benefits: "All-day body moisture, softens dry areas.",
+                skinType: "All Body Skin Types",
+                sensitivity: "Low",
+                daily: "Yes, after shower use."
+            },
+            "Care and More Lotion": {
+                priceUsd: 20.00,
+                priceEgp: 1000,
+                img: "images/care and more lotion.jpg",
+                ingredients: "Natural Oils, Vitamin E, Shea Butter",
+                benefits: "Smoothing body care experience, pleasant fragrance.",
+                skinType: "Normal Skin",
+                sensitivity: "Low",
+                daily: "Yes, daily body care."
+            },
+            "Shaan Hand Cream": {
+                priceUsd: 12.00,
+                priceEgp: 600,
+                img: "images/shaan hand cream.jpg",
+                ingredients: "Glycerin, Silicone Oils, Vitamin E",
+                benefits: "Nourishes dry hands, forms protective glove barrier.",
+                skinType: "Dry Hands",
+                sensitivity: "Low",
+                daily: "Yes, as needed throughout the day."
+            },
+            "Care and More Hand Cream": {
+                priceUsd: 11.00,
+                priceEgp: 550,
+                img: "images/care and more hand cream.jpg",
+                ingredients: "Aloe Vera, Glycerin, Light Emollients",
+                benefits: "Soft protection for hands, non-sticky formula.",
+                skinType: "All Hand Skin Types",
+                sensitivity: "Low",
+                daily: "Yes, frequent daily use."
+            },
+            "Eva Hand Cream": {
+                priceUsd: 10.00,
+                priceEgp: 500,
+                img: "images/eva hand cream.jpg",
+                ingredients: "Glycerin, Natural Extracts, Aqua",
+                benefits: "Moisturizing daily hand care, quick absorption.",
+                skinType: "All Skin Types",
+                sensitivity: "Low",
+                daily: "Yes, daily use."
+            },
+            "Vespera Classic Lip Balm": {
+                priceUsd: 9.00,
+                priceEgp: 450,
+                img: "images/lip palm.jpg",
+                ingredients: "Beeswax, Shea Butter, Vitamin E",
+                benefits: "Hydrating and glossy care, protects lips from drying.",
+                skinType: "Chapped & Dry Lips",
+                sensitivity: "Low",
+                daily: "Yes, frequent use throughout the day."
+            },
+            "Tinted Lip Balm": {
+                priceUsd: 10.00,
+                priceEgp: 500,
+                img: "images/lip palm2.jpg",
+                ingredients: "Natural Pigments, Jojoba Oil, Cocoa Butter",
+                benefits: "Soft color and moisture, enhances natural lip tone.",
+                skinType: "All Lip Types",
+                sensitivity: "Low",
+                daily: "Yes, daily use."
+            },
+            "Nourishing Lip Care": {
+                priceUsd: 11.00,
+                priceEgp: 550,
+                img: "images/lip palm3.jpg",
+                ingredients: "Almond Oil, Honey Extract, Petrolatum",
+                benefits: "Repairs dry and chapped lips deeply overnight.",
+                skinType: "Very Dry Lips",
+                sensitivity: "Low",
+                daily: "Yes, daily care."
+            },
+            "Luna Lip Balm": {
+                priceUsd: 8.00,
+                priceEgp: 400,
+                img: "images/luna lip palm.jpg",
+                ingredients: "Cocoa Butter, Paraffin, Flavor Oils",
+                benefits: "Moisturizing formula for lips, smooth application.",
+                skinType: "All Lip Types",
+                sensitivity: "Low",
+                daily: "Yes, daily use."
+            },
+            "Shaan Lip Balm": {
+                priceUsd: 10.00,
+                priceEgp: 500,
+                img: "images/shaan lip palm.png",
+                ingredients: "Panthenol, Shea Butter, Beeswax",
+                benefits: "Protective soothing lip balm, prevents chapping.",
+                skinType: "Sensitive Lips",
+                sensitivity: "Low",
+                daily: "Yes, daily use."
+            },
+            "Amanda Lip Balm": {
+                priceUsd: 9.50,
+                priceEgp: 475,
+                img: "images/amanda lip palm.jpg",
+                ingredients: "Fruit Extracts, Plant Oils, Vitamin E",
+                benefits: "Vibrant shine and moisture.",
+                skinType: "All Lip Types",
+                sensitivity: "Low",
+                daily: "Yes, daily use."
+            },
+            "Relaxing Massage Oil": {
+                priceUsd: 30.00,
+                priceEgp: 1500,
+                img: "images/massage.jpg",
+                ingredients: "Lavender Essential Oil, Almond Oil, Jojoba Oil",
+                benefits: "Soothing relaxation blend, relieves stress and tension.",
+                skinType: "All Body Skin Types",
+                sensitivity: "Low",
+                daily: "Yes, as needed for massage."
+            },
+            "Aromatherapy Body Oil": {
+                priceUsd: 32.00,
+                priceEgp: 1600,
+                img: "images/massage2.jpg",
+                ingredients: "Chamomile Extract, Sweet Almond Oil, Essential Oils",
+                benefits: "Calming scents & smooth touch, relaxes mind and body.",
+                skinType: "All Body Skin Types",
+                sensitivity: "Low",
+                daily: "Yes, ideal after evening showers."
+            },
+            "Luxury Spa Oil": {
+                priceUsd: 35.00,
+                priceEgp: 1750,
+                img: "images/massage3.jpg",
+                ingredients: "Grapeseed Oil, Eucalyptus Extract, Vitamin E",
+                benefits: "Deep muscle relaxation, nourishes skin intensely.",
+                skinType: "All Body Skin Types",
+                sensitivity: "Low",
+                daily: "Yes, for spa-like relaxation care."
+            }
+        };
+
+        let cart = [];
+
+        function toggleCartDrawer() {
+            const drawer = document.getElementById('cart-drawer');
+            const overlay = document.getElementById('cart-overlay');
+            drawer.classList.toggle('open');
+            overlay.classList.toggle('active');
+        }
+
+        function toggleSearchModal() {
+            const modal = document.getElementById('search-modal');
+            modal.style.display = modal.style.display === 'flex' ? 'none' : 'flex';
+        }
+
+        function filterProducts() {
+            const query = document.getElementById('search-input').value.toLowerCase();
+            const resultsContainer = document.getElementById('search-results');
+            resultsContainer.innerHTML = '';
+
+            if (!query.trim()) return;
+
+            const matches = Object.keys(productDatabase).filter(name => name.toLowerCase().includes(query));
+
+            if (matches.length === 0) {
+                resultsContainer.innerHTML = '<p style="color: #6E5243; font-size: 13px; text-align: center;">No products found.</p>';
+                return;
+            }
+
+            matches.forEach(name => {
+                const prod = productDatabase[name];
+                const div = document.createElement('div');
+                div.style.cssText = 'display: flex; align-items: center; gap: 10px; padding: 8px; cursor: pointer; border-bottom: 1px solid rgba(168,136,111,0.2);';
+                div.innerHTML = `
+                    <img src="${prod.img}" alt="${name}" style="width: 40px; height: 40px; object-fit: contain; background: #fff; border-radius: 4px;">
+                    <div style="flex: 1;">
+                        <h4 style="font-size: 13px; margin: 0; color: #6E5243; font-family: 'Playfair Display', serif;">${name}</h4>
+                        <span style="font-size: 11px; color: #888;">$${prod.priceUsd.toFixed(2)} (${prod.priceEgp} EGP)</span>
+                    </div>
+                `;
+                div.onclick = function() {
+                    toggleSearchModal();
+                    openProductModal(name);
+                };
+                resultsContainer.appendChild(div);
+            });
+        }
+
+        function toggleSection(sectionId, btn) {
+            const section = document.getElementById(sectionId);
+            section.classList.toggle('show');
+            if (section.classList.contains('show')) {
+                btn.innerText = 'Read Less ˂';
+            } else {
+                btn.innerText = 'Read More ✨';
+            }
+        }
+
+        function addProductToCart(name, priceUsd, img) {
+            const existingItem = cart.find(item => item.name === name);
+            if (existingItem) {
+                existingItem.quantity += 1;
+            } else {
+                cart.push({ name, priceUsd, img, quantity: 1 });
+            }
+            updateCartUI();
+            toggleCartDrawer();
+        }
+
+        function updateCartUI() {
+            const container = document.getElementById('cart-items-container');
+            const countSpan = document.getElementById('cart-count');
+            const totalUsdSpan = document.getElementById('cart-total-usd');
+            const totalEgpSpan = document.getElementById('cart-total-egp');
+
+            container.innerHTML = '';
+            let totalCount = 0;
+            let totalUsd = 0;
+
+            cart.forEach((item, index) => {
+                totalCount += item.quantity;
+                let itemTotalUsd = item.priceUsd * item.quantity;
+                totalUsd += itemTotalUsd;
+
+                const itemRow = document.createElement('div');
+                itemRow.className = 'cart-item-row';
+                itemRow.innerHTML = `
+                    <img src="${item.img}" alt="${item.name}">
+                    <div style="flex: 1;">
+                        <h5 style="margin: 0 0 5px 0; font-size: 13px; font-family: 'Poppins', sans-serif; color: #2c2c2c;">${item.name}</h5>
+                        <span style="font-size: 12px; color: #8c6d62; font-weight: 600;">$${item.priceUsd.toFixed(2)} x ${item.quantity}</span>
+                    </div>
+                    <button onclick="removeFromCart(${index})" style="background: none; border: none; color: #ff5e5e; cursor: pointer; font-size: 16px;"><i class="fas fa-trash-alt"></i></button>
+                `;
+                container.appendChild(itemRow);
+            });
+
+            countSpan.textContent = totalCount;
+            totalUsdSpan.textContent = `$${totalUsd.toFixed(2)}`;
+            totalEgpSpan.textContent = `${(totalUsd * 50).toFixed(2)} EGP`;
+        }
+
+        function removeFromCart(index) {
+            cart.splice(index, 1);
+            updateCartUI();
+        }
+
+        function toggleCheckoutModal() {
+            if (cart.length === 0) {
+                alert('Your shopping bag is empty!');
+                return;
+            }
+            const modal = document.getElementById('checkout-modal');
+            modal.style.display = modal.style.display === 'flex' ? 'none' : 'flex';
+            if (modal.style.display === 'flex') {
+                toggleCartDrawer();
+            }
+        }
+
+        function showOrderNameSuggestions() {
+            document.getElementById('order-name-suggestions').style.display = 'block';
+        }
+
+        function selectOrderName(fullName) {
+            document.getElementById('order-name').value = fullName;
+            document.getElementById('order-name-suggestions').style.display = 'none';
+        }
+
+        function filterOrderNameSuggestions() {
+            document.getElementById('order-name-suggestions').style.display = 'block';
+        }
+
+        async function submitOrder(event) {
+            event.preventDefault();
+            const form = document.getElementById('checkout-form');
+            const successMsg = document.getElementById('order-success-msg');
+
+            let cartSummary = "Items in Order:\n";
+            let totalUsdSum = 0;
+            cart.forEach(item => {
+                let subUsd = item.priceUsd * item.quantity;
+                totalUsdSum += subUsd;
+                cartSummary += `- ${item.name} (Qty: ${item.quantity}) - $${subUsd.toFixed(2)}\n`;
+            });
+            cartSummary += `Total: $${totalUsdSum.toFixed(2)} (${(totalUsdSum * 50).toLocaleString()} EGP)`;
+
+            document.getElementById('order-details-input').value = cartSummary;
+            const formData = new FormData(form);
+
+            try {
+                const response = await fetch(form.action, {
+                    method: 'POST',
+                    body: formData,
+                    headers: { 'Accept': 'application/json' }
+                });
+
+                if (response.ok) {
+                    form.style.display = 'none';
+                    successMsg.style.display = 'block';
+                    setTimeout(() => {
+                        toggleCheckoutModal();
+                        successMsg.style.display = 'none';
+                        form.style.display = 'flex';
+                        cart = [];
+                        updateCartUI();
+                    }, 4000);
+                } else {
+                    alert('There was a problem submitting your order. Please try again.');
+                }
+            } catch (error) {
+                alert('Connection error. Please check your internet connection.');
+            }
+        }
+
+        function openProductModal(productName) {
+            const data = productDatabase[productName];
+            if (!data) return;
+
+            document.getElementById('modal-product-img').src = data.img;
+            document.getElementById('modal-product-title').textContent = productName;
+            document.getElementById('modal-product-ingredients').textContent = data.ingredients;
+            document.getElementById('modal-product-benefits').textContent = data.benefits;
+            document.getElementById('modal-product-skintype').textContent = data.skinType;
+            document.getElementById('modal-product-sensitivity').textContent = data.sensitivity;
+            document.getElementById('modal-product-daily').textContent = data.daily;
+
+            const addBtn = document.getElementById('modal-add-btn');
+            addBtn.onclick = function() {
+                addProductToCart(productName, data.priceUsd, data.img);
+                closeProductModal();
+            };
+
+            document.getElementById('product-modal').style.display = 'flex';
+        }
+
+        function closeProductModal() {
+            document.getElementById('product-modal').style.display = 'none';
+        }
+    </script>
+</body>
+</html>

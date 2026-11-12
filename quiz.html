@@ -1,0 +1,151 @@
+ <!DOCTYPE html>
+<html lang="en" dir="ltr" id="htmlRoot">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vespera | Skin Quiz</title>
+    <link rel="stylesheet" href="style.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:wght@400;500&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body style="background-color: #f0dec9; font-family: 'Playfair Display', serif; margin: 0; padding: 0;">
+
+    <nav class="navbar">
+        <div class="logo">
+            <a href="index.html">
+                <img src="images/logo-ves.png" alt="Vespera Logo" style="height: 65px; width: auto;">
+            </a>
+        </div>
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="shop.html">Shop</a></li>
+            <li><a href="quiz.html" style="color: #b37965;">Skin Quiz</a></li>
+            <li><a href="contact.html">Contact</a></li>
+        </ul>
+        <div class="nav-icons">
+            <a href="javascript:void(0);" onclick="toggleSearchModal()" id="search-icon" title="Search"><i
+                    class="fas fa-search"></i></a>
+            <a href="shop.html" id="cart-icon"><i class="fas fa-shopping-bag"
+                    style="color: #241917; font-size: 18px;"></i></a>
+        </div>
+    </nav>
+
+    <div style="display: flex; justify-content: center; align-items: center; min-height: 85vh; padding: 20px;">
+        <div
+            style="background: #e9bd9c; padding: 40px; border-radius: 15px; width: 100%; max-width: 650px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border: 2px solid rgba(255, 255, 255, 0.014);">
+            <h2 style="text-align: center; color: #2c2c2c; margin-bottom: 10px; font-weight: 700;"> Smart Skincare Quiz 🎀 </h2>
+            <p style="text-align: center; color: #444; margin-bottom: 25px; font-size: 14px;">Answer the questions accurately to let our assistant find your perfect routine:</p>
+
+                <div id="quiz-form">
+                    <div style="margin-bottom: 18px;">
+                        <label
+                            style="display: block; margin-bottom: 6px; font-weight: 600; color: #1b1412; font-size: 14px;">1. What is your primary skin type?</label>
+                        <select id="q1"
+                            style="width: 100%; padding: 10px; border: 1px solid #d4a39a; border-radius: 8px; outline: none; background: #fff;">
+                            <option value="" disabled selected>Select your skin type...</option>
+                            <option value="dry">Dry</option>
+                            <option value="oily">Oily</option>
+                            <option value="combination">Combination</option>
+                            <option value="normal">Normal</option>
+                        </select>
+                    </div>
+
+                    <div style="margin-bottom: 18px;">
+                        <label
+                            style="display: block; margin-bottom: 6px; font-weight: 600; color: #1b1412; font-size: 14px;">2. What is your main skin concern?</label>
+                        <select id="q2"
+                            style="width: 100%; padding: 10px; border: 1px solid #d4a39a; border-radius: 8px; outline: none; background: #fff;">
+                            <option value="" disabled selected>Select main concern...</option>
+                            <option value="acne">Acne & Blemishes</option>
+                            <option value="aging">Fine Lines & Anti-Aging</option>
+                            <option value="hydration">Dryness & Lack of Moisture</option>
+                            <option value="pigmentation">Dark Spots & Dullness</option>
+                        </select>
+                    </div>
+
+                    <div style="margin-bottom: 18px;">
+                        <label
+                            style="display: block; margin-bottom: 6px; font-weight: 600; color: #1b1412; font-size: 14px;">3. Does your skin easily get irritated, red, or sensitive to products?</label>
+                        <select id="q3"
+                            style="width: 100%; padding: 10px; border: 1px solid #d4a39a; border-radius: 8px; outline: none; background: #fff;">
+                            <option value="" disabled selected>Select sensitivity status...</option>
+                            <option value="yes">Yes, very sensitive</option>
+                            <option value="sometimes">Sometimes / Mildly</option>
+                            <option value="no">No, resilient skin</option>
+                        </select>
+                    </div>
+
+                    <div style="margin-bottom: 18px;">
+                        <label
+                            style="display: block; margin-bottom: 6px; font-weight: 600; color: #1b1412; font-size: 14px;">4. How often do you experience breakouts or skin texture issues?</label>
+                        <select id="q4"
+                            style="width: 100%; padding: 10px; border: 1px solid #d4a39a; border-radius: 8px; outline: none; background: #fff;">
+                            <option value="" disabled selected>Select frequency...</option>
+                            <option value="frequently">Frequently</option>
+                            <option value="occasionally">Occasionally (e.g., hormonal)</option>
+                            <option value="rarely">Rarely or Never</option>
+                        </select>
+                    </div>
+
+                    <div style="margin-bottom: 25px;">
+                        <label
+                            style="display: block; margin-bottom: 6px; font-weight: 600; color: #1b1412; font-size: 14px;">5. What is your primary goal for your daily skincare routine?</label>
+                        <select id="q5"
+                            style="width: 100%; padding: 10px; border: 1px solid #7c5750; border-radius: 8px; outline: none; background: #f0dcc5;">
+                            <option value="" disabled selected>Select your goal...</option>
+                            <option value="glow">Deep Hydration & Natural Glow</option>
+                            <option value="clear">Clear Acne & Control Oil</option>
+                            <option value="soothe">Soothe Redness & Protect Barrier</option>
+                            <option value="anti-aging">Smooth Texture & Anti-Aging</option>
+                        </select>
+                    </div>
+
+                    <button type="button" id="submit-quiz-btn" onclick="validateAndRedirect()"
+                        style="width: 100%; background: #6E5243; color: #fff; border: none; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 15px;">
+                        Find My Matching Products 🎀
+                    </button>
+                </div>
+        </div>
+    </div>
+
+    <script>
+        function validateAndRedirect() {
+            const q1 = document.getElementById("q1").value;
+            const q2 = document.getElementById("q2").value;
+            const q3 = document.getElementById("q3").value;
+            const q4 = document.getElementById("q4").value;
+            const q5 = document.getElementById("q5").value;
+
+            if (q1 === "" || q2 === "" || q3 === "" || q4 === "" || q5 === "") {
+                alert("Please answer all questions before proceeding to the results page! 🎀");
+                return; // يوقف الكود هنا تماماً ولا ينفذ أي شيء بعدها
+            }
+
+            localStorage.setItem('userSkinType', q1);
+            localStorage.setItem('userSkinConcern', q2);
+            localStorage.setItem('userSkinSensitivity', q3);
+            localStorage.setItem('userSkinFrequency', q4);
+            localStorage.setItem('userSkinGoal', q5);
+
+            window.location.href = "results.html";
+        }
+    </script>
+
+<div id="search-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; justify-content: center; align-items: center;">
+  <div style="background: #e4cdb3; padding: 30px; border-radius: 20px; width: 90%; max-width: 500px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); position: relative;">
+    <span onclick="toggleSearchModal()" style="position: absolute; top: 15px; right: 20px; font-size: 24px; cursor: pointer; color: #6E5243;">&times;</span>
+    
+    <h3 style="font-family: 'Playfair Display', serif; margin-bottom: 15px; color: #6E5243;">Search Products 🔍</h3>
+    
+    <input type="text" id="search-input" onkeyup="handleLiveSearch(event)" placeholder="Type to search products.." style="width: 100%; padding: 12px; border: 1px solid #A8886F; border-radius: 8px; background: #EADCCB; color: #6E5243; outline: none; font-size: 14px;">
+    
+    <div id="search-results" style="margin-top: 15px; max-height: 200px; overflow-y: auto;"></div>
+  </div>
+</div>
+</body>
+
+</html>

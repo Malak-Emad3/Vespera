@@ -1,0 +1,709 @@
+ * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+ 
+
+.hero-banner {
+    position: relative;
+    width: 100%;
+    height: 750px;
+    background-image: url('images/pic1.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+/* الناف بار الأساسي */
+.transparent-nav {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center; 
+    padding: 20px 60px;
+    background: transparent;
+    z-index: 1000;
+}
+
+.hero-nav {
+    background: transparent;
+    position: absolute;
+}
+
+.shop-nav {
+    background: rgba(211, 158, 150, 0.85);
+    backdrop-filter: blur(8px);
+    position: fixed;
+    border-bottom: 1px solid rgba(77, 51, 43, 0.15);
+    padding: 15px 60px;
+}
+
+.logo-container {
+    display: flex;
+    align-items: center;
+}
+
+.logo-container img {
+    height: 90px;
+    width: auto;
+    object-fit: contain;
+}
+
+.nav-links {
+    display: flex;
+    gap: 30px;
+    list-style: none;
+    align-items: center;
+    margin: 0;
+    padding: 0;
+}
+
+.nav-links a {
+    color: #4d332b;
+    text-decoration: none;
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+    font-size: 18px;
+    letter-spacing: 0.5px;
+    transition: color 0.3s ease;
+}
+
+.nav-links a:hover, 
+.nav-links a.active {
+    color: #c75a69; 
+    text-decoration: underline;
+}
+
+/* الأيقونات بلون بني ثابت وقاطع ويتجاهل حالة الـ Visited تماماً */
+.nav-icons {
+    display: flex;
+    gap: 25px; 
+    align-items: center;
+    position: relative;
+}
+
+.nav-icons a, 
+.nav-icons a:link, 
+.nav-icons a:visited {
+    color: #4d332b !important;
+    text-decoration: none;
+    cursor: pointer;
+    position: relative;
+}
+
+.nav-icons a i {
+    color: #4d332b !important; 
+    font-size: 18px;
+    transition: color 0.3s ease;
+}
+
+.nav-icons a:hover,
+.nav-icons a:hover i {
+    color:  #e4d5c2 !important;
+}
+/* حل نهائي لمشكلة تداخل الأيقونات مع السلة */
+.nav-icons {
+    position: relative;
+    z-index: 1 !important;
+}
+/* تثبيت النافبار والعناصر في مكانها الطبيعي بدون أي انعكاس */
+nav, .hero-nav, .nav-links {
+    direction: ltr !important;
+    text-align: left;
+}
+
+#cart-drawer {
+    z-index: 999999 !important;
+}
+#cart-count {
+    position: absolute;
+    top: -8px;
+    right: -10px;
+    background-color: #61382b;
+    color:  #EADCCB;
+    font-size: 10px;
+    padding: 2px 5px;
+    border-radius: 50%;
+    font-family: 'Poppins', sans-serif;
+}
+
+/* لو السلة بتفتح وتظهر كلاس active مثلاً، أو هنظبطها مع بعض */
+#cart-modal[style*="display: flex"] ~ .nav-icons,
+body:has(#cart-modal[style*="display: flex"]) .nav-icons {
+    display: none !important;
+}
+
+/* باقي التنسيقات العامة للمنتجات والنوافذ */
+.shop-container {
+    padding-bottom: 50px;
+}
+
+.product-section {
+    padding: 40px 60px;
+}
+
+.section-header {
+    margin-bottom: 25px;
+    border-bottom: 1px solid rgba(77, 51, 43, 0.15);
+    padding-bottom: 10px;
+}
+
+.section-header h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px;
+    color: #4d332b;
+    font-weight: 700;
+}
+
+ /* تنسيق شبكة المنتجات لتبقي منتجين في كل صف */
+.products-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* تخليهم اتنين جنب بعض بالضبط */
+  gap: 20px;
+  margin-top: 20px;
+}
+
+/* تنسيق كارت المنتج ولون الكتابة عشان تكون واضحة تماماً */
+.product-card {
+  background-color: #f0b9b9;
+  border-radius: 12px;
+  padding: 20px;
+  text-align: center;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+}
+
+.product-card h3 {
+  color: #2c2c2c !important; /* لون غامق وواضح لاسم المنتج */
+  font-size: 18px;
+  margin: 10px 0;
+}
+
+.product-card .desc {
+  color: #666666 !important; /* لون رمادي غامق وواضح للوصف */
+  font-size: 14px;
+  margin-bottom: 10px;
+}
+
+.product-card .price {
+  color: #4a3b32 !important; /* لون السعر */
+  font-weight: bold;
+  font-size: 16px;
+  margin-bottom: 15px;
+}
+.product-card:hover {
+    transform: translateY(-8px);
+    border-color: #f08fb4;
+    box-shadow: 0 15px 35px  #e9cbcb(50, 30, 25, 0.35);
+}
+
+.product-card img {
+    width: 100%;
+    height: 180px;
+    object-fit: contain;
+    border-radius: 12px;
+    margin-bottom: 15px;
+    background: rgba(248, 237, 227, 0.1); /* خلفية خفيفة جداً تحت الصورة لتوضيحها */
+    padding: 5px;
+}
+
+.product-card p {
+    font-size: 13px;
+    color: #bba799; /* لون نود فاتح ومريح للعين */
+    margin-bottom: 15px;
+}
+
+.product-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: auto;
+}
+
+.price {
+    color: #fdfbf7;
+    font-weight: bold;
+    font-size: 18px;
+    font-family: 'Playfair Display', serif;
+}
+
+/* Product from result  */
+ /* تنسيق كارت المنتج في صفحة النتائج */
+ .products-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* تخليهم اتنين جنب بعض بالضبط */
+  gap: 20px;
+  margin-top: 20px;
+}
+.product-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px;
+  border-radius: 16px;
+  background-color: #e9cbcb !important; /* لون الخلفية البينك المطلوب */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.product-card img {
+  width: 100%;
+  max-width: 180px;
+  height: 180px;
+  object-fit: contain;
+  margin-bottom: 15px;
+  display: block;
+}
+
+/* لون اسم المنتج */
+.product-card h3 {
+  color: #2c2c2c !important;
+  font-size: 17px;
+  font-weight: 600;
+  margin: 10px 0 6px 0;
+}
+
+/* لون وصف المنتج */
+.product-card .desc {
+  color: #1a1818 !important;
+  font-size: 13px;
+  margin-bottom: 10px;
+  line-height: 1.4;
+}
+
+/* لون السعر */
+.product-card .price {
+  color: #0c0b0b !important;
+  font-weight: bold;
+  font-size: 16px;
+  margin-bottom: 12px;
+}
+
+/* زر Add to Bag زي تصميم صفحة الشوب */
+.product-card .add-to-bag-btn,
+.btn-add {
+  background-color: #2c2c2c !important; /* نفس لون زر الشوب الغامق */
+  color: #ffffff !important;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 18px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.product-card .add-to-bag-btn:hover,
+.btn-add:hover {
+  background-color: #1a1a1a !important;
+  transform: translateY(-2px);
+}
+
+.modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background:  #e9cbcb(77, 51, 43, 0.4);
+    backdrop-filter: blur(5px);
+    z-index: 2000;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background: #f8ede3;
+    padding: 30px;
+    border-radius: 16px;
+    width: 90%;
+    max-width: 450px;
+    position: relative;
+    box-shadow: 0 15px 35px  #e9cbcb(77, 51, 43, 0.3);
+    border: 1px solid rgba(211, 158, 150, 0.4);
+}
+
+.close-btn {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    font-size: 24px;
+    cursor: pointer;
+    color: #4d332b;
+}
+
+.modal-content h3 {
+    font-family: 'Playfair Display', serif;
+    color: #4d332b;
+    margin-bottom: 20px;
+}
+
+#search-input {
+    width: 100%;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #d39e96;
+    background: #fff;
+    font-family: 'Poppins', sans-serif;
+    font-size: 14px;
+}
+
+.search-results-list {
+    margin-top: 15px;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.search-result-item {
+    padding: 10px;
+    background: rgba(211, 158, 150, 0.2);
+    margin-bottom: 8px;
+    border-radius: 6px;
+    cursor: pointer;
+    color: #4d332b;
+    font-size: 14px;
+    transition: background 0.3s;
+}
+
+.search-result-item:hover {
+    background: rgba(211, 158, 150, 0.5);
+}
+
+.cart-drawer {
+    max-height: 80vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.cart-items-container {
+    flex-grow: 1;
+    overflow-y: auto;
+    max-height: 250px;
+    margin-bottom: 15px;
+}
+
+.cart-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(211, 158, 150, 0.2);
+}
+
+.cart-item h4 {
+    font-size: 14px;
+    color: #4d332b;
+    font-family: 'Playfair Display', serif;
+}
+
+.cart-item p {
+    font-size: 12px;
+    color: #6b4c42;
+}
+
+.remove-item {
+    background: none;
+    border: none;
+    color: #a83232;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.cart-total-section {
+    display: flex;
+    justify-content: space-between;
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
+    color: #4d332b;
+    font-weight: bold;
+    margin-bottom: 15px;
+    border-top: 1px solid rgba(211, 158, 150, 0.4);
+    padding-top: 10px;
+}
+
+.checkout-btn {
+    width: 100%;
+    text-align: center;
+    padding: 12px;
+}
+
+.empty-cart {
+    color: #6b4c42;
+    text-align: center;
+    padding: 20px;
+    font-size: 14px;
+}
+
+.toast-notification {
+    visibility: hidden;
+    min-width: 230px;
+    background-color: #4d332b;
+    color: #fff;
+    text-align: center;
+    border-radius: 20px;
+    padding: 12px;
+    position: fixed;
+    z-index: 1000;
+    left: 50%;
+    bottom: 30px;
+    transform: translateX(-50%);
+    font-size: 14px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+.toast-notification.show {
+    visibility: visible;
+    animation: fadein 0.5s, fadeout 0.5s 2.5s;
+}
+
+@keyframes fadein {
+    from {bottom: 0; opacity: 0;}
+    to {bottom: 30px; opacity: 1;}
+}
+
+@keyframes fadeout {
+    from {bottom: 30px; opacity: 1;}
+    to {bottom: 0; opacity: 0;}
+}
+
+/* --- بوكس الكويز الذكي في الهوم --- */
+.home-quiz-box {
+    background: linear-gradient(135deg, #f3edea 0%, #e8dfdb 100%);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 35px 20px;
+    max-width: 750px;
+    margin: 40px auto;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+}
+
+[data-theme="dark"] .home-quiz-box {
+    background: linear-gradient(135deg, #1e1b18 0%, #2a2421 100%);
+}
+
+.home-quiz-box h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 24px;
+    margin-bottom: 10px;
+    color: var(--text-color);
+}
+
+.home-quiz-box p {
+    font-size: 14px;
+    opacity: 0.85;
+    margin-bottom: 20px;
+    color: var(--text-color);
+}
+.hide-nav-icons {
+    display: none !important;
+}
+
+ /* النافبار بالكامل باستخدام Flexbox مرن ونظيف */
+nav, .navbar {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    width: 100% !important;
+    padding: 20px 40px !important;
+    box-sizing: border-box !important;
+}
+
+/* روابط الصفحات تتسنطر في النص تماماً بالعافية وبحجم كبير وواضح */
+.nav-links, .nav-menu {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    gap: 35px !important;
+    list-style: none !important;
+    margin: 0 auto !important; /* السر هنا عشان تفضل في النص بالمللي */
+    padding: 0 !important;
+}
+
+.nav-links a, .nav-menu a {
+    font-size: 20px !important; /* حجم كبير وواضح زي ما طلبتي */
+    font-weight: 700 !important;
+    text-decoration: none !important;
+    color: #2c2c2c !important;
+    transition: color 0.3s ease;
+}
+
+.nav-links a:hover, .nav-menu a:hover {
+    color: #b37965 !important;
+}
+
+/* الأيقونات على اليمين بمسافة محترمة ومرتبة */
+.nav-icons, .navbar > *:last-child {
+    display: flex !important;
+    align-items: center !important;
+    gap: 20px !important;
+    margin: 0 !important;
+}
+/* الألوان الافتراضية (Light Mode) */
+:root {
+    --bg-color: #b9a1a1;
+    --card-bg: #b9a1a1;
+    --text-color: #2c2c2c;
+    --nav-bg: rgba(255, 255, 255, 0.8);
+    --border-color: rgba(255, 255, 255, 0.3);
+}
+
+/* وضع الظلام (Dark Mode) */
+body.dark-mode {
+    --bg-color: #1a1a1a;
+    --card-bg: #2d2d2d;
+    --text-color: #f1f1f1;
+    --nav-bg: rgba(30, 30, 30, 0.9);
+    --border-color: rgba(255, 255, 255, 0.1);
+}
+
+body {
+    background-color: var(--bg-color) !important;
+    color: var(--text-color) !important;
+    transition: background 0.3s ease, color 0.3s ease;
+}
+
+/* تنسيق أزرار التحكم الجديدة في النافبار */
+.site-controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-left: 15px;
+}
+
+.control-btn {
+    background:  #f0dec9;
+    color: #fff;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    font-family: inherit;
+    font-size: 13px;
+    transition: background 0.3s;
+}
+
+.control-btn:hover {
+    background: #b37965;
+}
+/* مثال لتطبيق نفس لون إطار صندوق المحتوى على الحقول والأسئلة */
+.quiz-container select, 
+.quiz-container input,
+.question-box { /* على حسب اسم الكلاس عندك للأسئلة */
+    border: 1px solid #e8d0d3 !important; /* استبدلي الكود ده بنفس كود لون الـ border بتاع الكونتنت الكبير */
+}
+/* تغيير لون البوكس الرئيسي في صفحة النتائج */
+#routine-container,
+div[style*="max-width: 1100px"] {
+  background-color:    #e9bd9c !important; /* استبدلي الكود ده باللون اللي يعجبك */
+}
+
+
+/* تطبيق الصورة والتدرج على باقي الصفحات فقط */
+
+/* تطبيق خلفية vespera background على الصفحات الأخرى */
+body:not(:has(.hero-banner)) {
+  background-color: #F9F3EC !important;
+  background-image: url('images/vespera background.png') !important;
+  background-size: cover !important;
+  background-attachment: fixed !important;
+  background-position: center !important;
+}
+
+/* البوكس البيج الموحد للصفحات الأخرى فقط */
+.main-page-card {
+  background-color: #EADCCB !important;
+  border-radius: 28px !important;
+  padding: 40px !important;
+  max-width: 1100px;
+  margin: 40px auto;
+  box-shadow: 0 10px 30px rgba(110, 82, 67, 0.08);
+}
+
+/* كروت المنتجات جوه الصفحات الأخرى */
+.product-card {
+  background-color: #cfad94 !important;
+  border-radius: 20px !important;
+  padding: 20px !important;
+  text-align: center;
+}
+
+.product-card h3, 
+.product-card .price,
+.product-card .desc {
+  color: #F9F3EC !important;
+}
+
+.product-card .add-to-bag-btn,
+.product-card button {
+  background-color: #6E5243 !important;
+  color: #F9F3EC !important;
+  border: none !important;
+  border-radius: 8px !important;
+  padding: 9px 20px !important;
+}
+/* ========================================= */
+/* Modals (Search & Cart Drawer) */
+/* ========================================= */
+.modal-overlay {
+  display: none; /* مخفي افتراضياً */
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 9999;
+  justify-content: center;
+  align-items: center;
+}
+
+/* الكلاس اللي بيخليه يظهر لما ندوس على الزرار */
+.modal-overlay.active,
+.modal-overlay.open {
+  display: flex !important;
+}
+
+/* تصميم البوكس الداخلي للسيرش بأسلوب الألوان الموحد */
+.modal-content {
+  background-color: #F9F3EC !important;
+  padding: 30px;
+  border-radius: 20px;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  position: relative;
+  color: #6E5243;
+}
+
+.modal-content h3 {
+  color: #6E5243;
+  font-family: 'Playfair Display', serif;
+  margin-bottom: 15px;
+}
+
+.modal-content input#search-input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #A8886F;
+  border-radius: 8px;
+  background-color: #EADCCB;
+  color: #6E5243;
+  outline: none;
+  font-size: 14px;
+}
+
+.close-btn {
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  font-size: 24px;
+  cursor: pointer;
+  color: #6E5243;
+}

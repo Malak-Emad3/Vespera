@@ -1,0 +1,350 @@
+ <!DOCTYPE html>
+<html lang="en" dir="ltr" id="htmlRoot">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vespera | Your Complete Skincare Routine</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:wght@300;400;500;600&display=swap"
+        rel="stylesheet">
+
+    <style>
+        #cart-drawer {
+            position: fixed;
+            top: 0;
+            right: -400px;
+            width: 380px;
+            height: 100%;
+            background: #f0dec9;
+            box-shadow: -5px 0 25px rgba(0, 0, 0, 0.1);
+            transition: 0.4s ease-in-out;
+            z-index: 999;
+            display: flex;
+            flex-direction: column;
+            padding: 25px;
+            box-sizing: border-box;
+        }
+
+        #cart-drawer.open {
+            right: 0;
+        }
+
+        .cart-item-row {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #e2cbb2;
+            padding-bottom: 12px;
+        }
+
+        .cart-item-row img {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 8px;
+            background: #fff;
+        }
+
+        #cart-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            display: none;
+            z-index: 998;
+        }
+
+        #cart-overlay.active {
+            display: block;
+        }
+    </style>
+</head>
+
+<body style="background-color: #f0dec9; font-family: 'Playfair Display', serif; margin: 0; padding: 0;">
+
+    <div id="cart-overlay" onclick="toggleCartDrawer()"></div>
+
+    <div id="cart-drawer">
+        <div
+            style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 2px solid #6E5243; padding-bottom: 10px;">
+            <h3 style="font-family: 'Playfair Display', serif; color: #6E5243; margin: 0;">🛍️ Your Shopping Bag</h3>
+            <button onclick="toggleCartDrawer()"
+                style="background: none; border: none; font-size: 20px; cursor: pointer; color: #6E5243;">&times;</button>
+        </div>
+
+        <div id="cart-items-container" style="flex: 1; overflow-y: auto;">
+        </div>
+
+        <div style="border-top: 2px solid #e2cbb2; padding-top: 15px; margin-top: 10px;">
+            <div
+                style="display: flex; justify-content: space-between; margin-bottom: 8px; font-weight: 600; font-size: 16px; color: #2c2c2c;">
+                <span>Total (USD):</span>
+                <span id="cart-total-usd">$0.00</span>
+            </div>
+            <div
+                style="display: flex; justify-content: space-between; margin-bottom: 15px; font-weight: 600; font-size: 16px; color: #6E5243;">
+                <span>Total (EGP):</span>
+                <span id="cart-total-egp">0.00 EGP</span>
+            </div>
+            <button
+                style="width: 100%; background: #6E5243; color: #fff; border: none; padding: 12px; border-radius: 8px; font-weight: 600; cursor: pointer; transition: 0.3s;">
+                Proceed to Checkout 🎀
+            </button>
+        </div>
+    </div>
+
+    <nav class="transparent-nav hero-nav" style="position: relative; background: transparent;">
+        <div class="logo-container">
+            <a href="index.html"><img src="images/logo-ves.png" alt="Vespera Logo" style="height: 65px; width: auto;"></a>
+        </div>
+
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="shop.html">Shop</a></li>
+            <li><a href="quiz.html" style="color: #6E5243;">Skin Quiz</a></li>
+            <li><a href="contact.html">Contact</a></li>
+        </ul>
+
+        <div class="nav-icons" style="margin-right: 120px;">
+            <a href="javascript:void(0);" onclick="toggleSearchModal()" id="search-icon" title="Search"><i
+                    class="fas fa-search"></i></a>
+            <a href="contact.html" title="Account"><i class="fas fa-user"></i></a>
+            <a href="#" id="cart-icon" onclick="toggleCartDrawer(); return false;" title="Shopping Bag"
+                style="cursor: pointer;">
+                <i class="fas fa-shopping-bag"></i>
+                <span id="cart-count">0</span>
+            </a>
+        </div>
+    </nav>
+
+    <div
+        style="max-width: 1100px; margin: 40px auto; background: #e9bd9c; padding: 40px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); border: 2px solid rgba(255, 255, 255, 0.05);">
+
+        <h1
+            style="font-family: 'Playfair Display', serif; text-align: center; margin-bottom: 10px; color: #2c2c2c; font-size: 32px; font-weight: 700;">
+            Your Personalized Skincare Routine 🎀</h1>
+        <p id="user-choices-summary" style="text-align: center; color: #444; margin-bottom: 25px; font-size: 15px;">
+            Based on your skin analysis, here is the perfect routine tailored just for you.</p>
+
+        <div style="background: #dfae8a; border: 1px solid #c79572; padding: 25px; border-radius: 12px; margin-bottom: 35px; color: #2c2c2c;">
+            <h3 style="font-family: 'Playfair Display', serif; color: #1b1412; margin-top: 0; margin-bottom: 15px; font-size: 20px;">  Skin Analysis Breakdown 🎀</h3>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;">
+                <div style="background: rgba(255, 255, 255, 0.4); padding: 15px; border-radius: 8px;">
+                    <h4 style="color: #2e5c31; margin-top: 0; margin-bottom: 8px;"><i class="fas fa-check-circle" style="color: #2e5c31;"></i> What Suits Your Skin</h4>
+                    <p id="analysis-dos" style="font-size: 13px; margin: 0; line-height: 1.5; color: #2c2c2c;"></p>
+                </div>
+                <div style="background: rgba(255, 255, 255, 0.4); padding: 15px; border-radius: 8px;">
+                    <h4 style="color: #a33b20; margin-top: 0; margin-bottom: 8px;"><i class="fas fa-times-circle" style="color: #a33b20;"></i> What to Avoid (Harmful)</h4>
+                    <p id="analysis-donts" style="font-size: 13px; margin: 0; line-height: 1.5; color: #2c2c2c;"></p>
+                </div>
+            </div>
+        </div>
+
+        <h2 style="font-family: 'Playfair Display', serif; color: #2c2c2c; font-size: 22px; margin-bottom: 20px; text-align: center; font-weight: 700;">Your Custom Product Routine</h2>
+
+        <div id="routine-container"
+            style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 25px; margin-bottom: 40px;">
+        </div>
+
+        <div style="text-align: center; display: flex; justify-content: center; gap: 15px;">
+            <a href="shop.html"
+                style="background-color: #6E5243; color: #fff; padding: 12px 25px; border-radius: 30px; font-weight: 600; text-decoration: none; font-size: 14px; transition: 0.3s;">
+                Browse All Shop 🛍️
+            </a>
+            <a href="quiz.html"
+                style="background-color: #2c2c2c; color: #fff; padding: 12px 25px; border-radius: 30px; font-weight: 600; text-decoration: none; font-size: 14px; transition: 0.3s;">
+                Retake Quiz 🔄
+            </a>
+        </div>
+    </div>
+
+    <div id="search-modal"
+        style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: none; justify-content: center; align-items: flex-start; padding-top: 100px; z-index: 1000;">
+        <div
+            style="background: #fff; padding: 25px; border-radius: 12px; width: 90%; max-width: 500px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); position: relative;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h3 style="font-family: 'Playfair Display', serif; margin: 0; color: #6E5243;">🔍 Search Products</h3>
+                <button onclick="toggleSearchModal()"
+                    style="background: none; border: none; font-size: 22px; cursor: pointer; color: #333;">&times;</button>
+            </div>
+            <input type="text" id="search-input" placeholder="Type to search products..."
+                style="width: 100%; padding: 12px; border: 1px solid #A8886F; border-radius: 8px; font-size: 14px; box-sizing: border-box; outline: none; background: #EADCCB; color: #6E5243;"
+                onkeyup="filterProducts()">
+        </div>
+    </div>
+
+    <script>
+        const EGP_RATE = 50;
+
+        const skinType = localStorage.getItem('userSkinType') || 'combination';
+        const skinConcern = localStorage.getItem('userSkinConcern') || 'hydration';
+        const skinSensitivity = localStorage.getItem('userSkinSensitivity') || 'no';
+
+        document.getElementById('user-choices-summary').innerText =
+            `Analysis based on your selections: Skin Type (${skinType.toUpperCase()}) | Focus (${skinConcern.toUpperCase()})`;
+
+        const analysisData = {
+            dry: {
+                dos: "Use creamy, hydrating cleansers, rich moisturizers containing ceramides and hyaluronic acid, and always lock in moisture with protective oils.",
+                donts: "Avoid foaming cleansers with high sulfates, hot water washing, alcohol-based toners, and physical scrubs that strip natural oils."
+            },
+            oily: {
+                dos: "Use gel-based lightweight cleansers, oil-free non-comedogenic moisturizers, and chemical exfoliants like Salicylic Acid (BHA) to control sebum.",
+                donts: "Avoid heavy oil-based creams, pore-clogging comedogenic ingredients, and over-washing which triggers more oil production."
+            },
+            combination: {
+                dos: "Balance your routine by using gentle balancing cleansers, lightweight hydration on the T-zone, and targeted moisture on dry cheeks.",
+                donts: "Avoid using harsh mattifying products all over your face, and harsh physical exfoliants that irritate transitional zones."
+            },
+            normal: {
+                dos: "Maintain your skin barrier with gentle antioxidant serums, balanced hydration, and daily broad-spectrum sunscreen.",
+                donts: "Avoid switching harsh skincare products too frequently or skipping daily UV protection."
+            }
+        };
+
+        const currentAnalysis = analysisData[skinType] || analysisData.combination;
+        document.getElementById('analysis-dos').innerText = currentAnalysis.dos;
+        document.getElementById('analysis-donts').innerText = currentAnalysis.donts;
+
+        const productsDatabase = {
+            cleansers: {
+                oily: { step: "Step 1: Cleanser", name: "Starville Acne Cleanser", desc: "Regulates excess sebum and clears pores without over-drying.", ingredients: "Active Ingredients: Salicylic Acid, Tea Tree Extract, Panthenol. Function: Deeply purifies oily skin, fights acne-causing bacteria, and regulates sebum production.", price: 12.00, image: "images/starville Cleanser.png" },
+                dry: { step: "Step 1: Cleanser", name: "CeraVe Hydrating Cleanser", desc: "Gentle hydrating cleanser that restores dry skin barrier.", ingredients: "Active Ingredients: Ceramides (1, 3, 6-II), Hyaluronic Acid, Glycerin. Function: Cleanses while locking in moisture, repairs compromised skin barrier, and prevents dryness.", price: 18.00, image: "images/cerave Cleanser.png" },
+                combination: { step: "Step 1: Cleanser", name: "Kiara Balancing Cleanser", desc: "Balances oily T-zone while hydrating dry areas.", ingredients: "Active Ingredients: Niacinamide, Aloe Vera, Gentle Surfactants. Function: Balances combination zones, gently removes impurities without stripping natural hydration.", price: 15.00, image: "images/kiara Cleanser.jpg" },
+                normal: { step: "Step 1: Cleanser", name: "Dermactive Gentle Cleanser", desc: "Maintains natural balance and leaves skin refreshed.", ingredients: "Active Ingredients: Vitamin E, Chamomile Extract. Function: Maintains skin's natural pH balance and refreshes everyday complexion.", price: 14.00, image: "images/dermaactive Cleanser.png" }
+            },
+            serums: {
+                acne: { step: "Step 2: Serum", name: "The Ordinary Niacinamide Serum", desc: "Targets blemishes, minimizes pores, and balances oil production.", ingredients: "Active Ingredients: 10% Niacinamide (Vitamin B3), 1% Zinc PCA. Function: Reduces blemishes, refines enlarged pores, and regulates sebum activity.", price: 24.00, image: "images/ordinary serum.jpg" },
+                aging: { step: "Step 2: Serum", name: "Anua Anti-Aging Collagen Serum", desc: "Smooths fine lines and restores skin elasticity and firmness.", ingredients: "Active Ingredients: Plant Collagen, Peptides, Adenosine. Function: Boosts skin elasticity, reduces fine lines, and firms sagging skin tissues.", price: 28.00, image: "images/Anua surem.jpg" },
+                hydration: { step: "Step 2: Serum", name: "Hyaluronic Deep Moisture Serum", desc: "Intense hydration boost for dry and dull skin layers.", ingredients: "Active Ingredients: Multi-molecular Hyaluronic Acid, Vitamin B5. Function: Draws moisture deep into skin cells, plumps fine dehydration lines, and restores radiance.", price: 22.00, image: "images/Anua surem.jpg" },
+                pigmentation: { step: "Step 2: Serum", name: "Brightening Vitamin C Serum", desc: "Fades dark spots and enhances natural radiant glow.", ingredients: "Active Ingredients: 15% Pure Vitamin C, Alpha Arbutin, Ferulic Acid. Function: Fades dark spots, fights oxidative stress, and illuminates dull complexions.", price: 25.00, image: "images/ordinary serum.jpg" }
+            },
+            moisturizers: {
+                oily: { step: "Step 3: Moisturizer", name: "Lightweight Gel Moisturizer", desc: "Locks in hydration all day long without clogging pores.", ingredients: "Active Ingredients: Green Tea Extract, Hyaluronic Acid, Squalane. Function: Provides oil-free hydration, soothes inflammation, and controls shine.", price: 20.00, image: "images/mostrizer1.jpg" },
+                dry: { step: "Step 3: Moisturizer", name: "Leylak Rich Cream", desc: "Deeply nourishing cream to restore dry, flaky skin.", ingredients: "Active Ingredients: Shea Butter, Shea Oil, Natural Lipid Complex. Function: Deeply nourishes flaky patches, softens skin texture, and locks in long-lasting moisture.", price: 19.00, image: "images/leylak Cream.png" },
+                combination: { step: "Step 3: Moisturizer", name: "CeraVe Moisturizing Lotion", desc: "Lightweight hydration that locks in natural moisture barrier.", ingredients: "Active Ingredients: Essential Ceramides, Hyaluronic Acid, MVE Technology. Function: Provides 24-hour controlled hydration without feeling heavy or greasy on the T-zone.", price: 20.00, image: "images/cerave cream.png" },
+                normal: { step: "Step 3: Moisturizer", name: "Shan Daily Hydrating Cream", desc: "Balanced moisture for healthy everyday radiance.", ingredients: "Active Ingredients: Panthenol, Vitamin E, Almond Oil. Function: Maintains balanced everyday moisture and protects against environmental stressors.", price: 18.00, image: "images/moist-1 Cream.jpg" }
+            },
+            sunscreens: {
+                sensitive: { step: "Step 4: Sunscreen", name: "Melatime Daily Sunscreen SPF 50+", desc: "Broad-spectrum protection for sensitive skin with zero irritation.", ingredients: "Active Ingredients: Zinc Oxide, Titanium Dioxide, Centella Asiatica. Function: Mineral-based UV protection that soothes redness and shields sensitive barriers.", price: 22.00, image: "images/melatime sunscrean.png" },
+                default: { step: "Step 4: Sunscreen", name: "Vacation Daily Sunscreen SPF 50+", desc: "Lightweight daily UV protection with zero white cast.", ingredients: "Active Ingredients: Chemical UV Filters, Niacinamide, Aloe Vera. Function: Protects against UVA/UVB rays with an invisible, non-greasy finish.", price: 23.00, image: "images/vacation sunscrean.png" }
+            }
+        };
+
+        const selectedCleanser = productsDatabase.cleansers[skinType] || productsDatabase.cleansers.combination;
+        const selectedSerum = productsDatabase.serums[skinConcern] || productsDatabase.serums.hydration;
+        const selectedMoisturizer = productsDatabase.moisturizers[skinType] || productsDatabase.moisturizers.combination;
+        const selectedSunscreen = skinSensitivity === 'yes' ? productsDatabase.sunscreens.sensitive : productsDatabase.sunscreens.default;
+
+        const routineProducts = [selectedCleanser, selectedSerum, selectedMoisturizer, selectedSunscreen];
+
+        function displayRoutineProducts() {
+            const container = document.getElementById("routine-container");
+            if (!container) return;
+
+            container.innerHTML = routineProducts.map(item => `
+                <div style="background: #dfae8a; border-radius: 14px; border: 1px solid #c79572; overflow: hidden; display: flex; flex-direction: column; justify-content: space-between; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+                    <div style="width: 100%; height: 220px; display: flex; justify-content: center; align-items: center; background: rgba(255, 255, 255, 0.4); border-radius: 10px; margin-bottom: 15px; overflow: hidden; border: 1px solid rgba(255, 255, 255, 0.5);">
+                        <img src="${item.image}" alt="${item.name}" style="max-width: 100%; max-height: 100%; object-fit: contain;" onerror="this.src='images/logo-ves.png'">
+                    </div>
+                    
+                    <div style="flex: 1; display: flex; flex-direction: column; justify-content: space-between;">
+                        <div>
+                            <span style="display: inline-block; background: #6E5243; color: #fff; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; margin-bottom: 8px;">${item.step}</span>
+                            <h3 style="font-family: 'Playfair Display', serif; font-size: 18px; color: #2c2c2c; margin-bottom: 6px;">${item.name}</h3>
+                            <p style="color: #333; font-size: 13px; margin-bottom: 10px; line-height: 1.4;"><b>Overview:</b> ${item.desc}</p>
+                            <p style="color: #2c2c2c; font-size: 12px; margin-bottom: 15px; line-height: 1.5; background: rgba(255, 255, 255, 0.4); padding: 10px; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.5);">${item.ingredients}</p>
+                        </div>
+
+                        <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(255, 255, 255, 0.4); padding-top: 12px; margin-top: 10px;">
+                            <div>
+                                <span style="font-weight: 600; color: #1b1412; font-size: 15px; display: block;">$${item.price.toFixed(2)}</span>
+                                <span style="font-size: 11px; color: #444;">(${(item.price * EGP_RATE).toLocaleString()} EGP)</span>
+                            </div>
+                            <button onclick="addProductToCart('${item.name}', ${item.price}, '${item.image}')" style="background: #6E5243; color: #fff; border: none; padding: 9px 18px; border-radius: 6px; font-size: 13px; font-weight: 500; cursor: pointer; transition: 0.3s;">
+                                Add to Bag 🛍️
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        document.addEventListener("DOMContentLoaded", displayRoutineProducts);
+
+        function toggleCartDrawer() {
+            document.getElementById('cart-drawer').classList.toggle('open');
+            document.getElementById('cart-overlay').classList.toggle('active');
+            renderCartItems();
+        }
+
+        function addProductToCart(name, price, image) {
+            let cart = JSON.parse(localStorage.getItem('cart')) || [];
+            cart.push({name: name, price: price, image: image, quantity: 1});
+            localStorage.setItem('cart', JSON.stringify(cart));
+
+            updateCartCountDisplay();
+            renderCartItems();
+            toggleCartDrawer();
+        }
+
+        function updateCartCountDisplay() {
+            let cart = JSON.parse(localStorage.getItem('cart')) || [];
+            const cartCountEl = document.getElementById('cart-count');
+            if (cartCountEl) {
+                cartCountEl.innerText = cart.length;
+            }
+        }
+
+        function renderCartItems() {
+            let cart = JSON.parse(localStorage.getItem('cart')) || [];
+            const container = document.getElementById('cart-items-container');
+            const totalUsdEl = document.getElementById('cart-total-usd');
+            const totalEgpEl = document.getElementById('cart-total-egp');
+
+            if (cart.length === 0) {
+                container.innerHTML = `<p style="text-align: center; color: #777; margin-top: 40px;">Your shopping bag is empty.</p>`;
+                totalUsdEl.innerText = "$0.00";
+                totalEgpEl.innerText = "0.00 EGP";
+                return;
+            }
+
+            let totalUsd = 0;
+            container.innerHTML = cart.map((item, index) => {
+                totalUsd += item.price;
+                let itemEgp = item.price * EGP_RATE;
+                return `
+                    <div class="cart-item-row">
+                        <img src="${item.image}" alt="${item.name}" onerror="this.src='images/logo-ves.png'">
+                        <div style="flex: 1;">
+                            <h4 style="font-size: 14px; margin: 0 0 4px 0; color: #2c2c2c;">${item.name}</h4>
+                            <span style="font-size: 12px; color: #6E5243; font-weight: 600;">$${item.price.toFixed(2)} (${itemEgp.toLocaleString()} EGP)</span>
+                        </div>
+                        <button onclick="removeCartItem(${index})" style="background: none; border: none; color: #ff5252; cursor: pointer; font-size: 14px;"><i class="fas fa-trash"></i></button>
+                    </div>
+                `;
+            }).join('');
+
+            totalUsdEl.innerText = `$${totalUsd.toFixed(2)}`;
+            totalEgpEl.innerText = `${(totalUsd * EGP_RATE).toLocaleString()} EGP`;
+        }
+
+        function removeCartItem(index) {
+            let cart = JSON.parse(localStorage.getItem('cart')) || [];
+            cart.splice(index, 1);
+            localStorage.setItem('cart', JSON.stringify(cart));
+            updateCartCountDisplay();
+            renderCartItems();
+        }
+
+        updateCartCountDisplay();
+    </script>
+</body>
+
+</html>
